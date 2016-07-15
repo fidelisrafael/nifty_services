@@ -11,6 +11,8 @@ This gem was designed and conventioned to be used specially with **Web API appli
 
 ### Conventions
 
+#### Single responsibility
+
 Each service class is responsible for perform exactly [one single task](https://en.wikipedia.org/wiki/Single_responsibility_principle), say goodbye for code (most important: logic) duplication in your code.
 Beside this, one of the aim of NiftyServices is to provide a **very standardized** code architecture, allowing developers to quickly develop and implement new features keeping the application codebase organized and stable.
 
@@ -88,6 +90,7 @@ class WelcomeMailSendService < NiftyServices::BaseService
   after_error do
     user_data = [@user.name, @user.email]
     log.error('error sending welcome email to user %s(%s)' % user_data)
+    log.error(errors)
   end
 
   def initialize(user, options = {})
@@ -105,7 +108,8 @@ class WelcomeMailSendService < NiftyServices::BaseService
 
   private
   def send_mail_to_user
-    UsersMailer.welcome(@user).deliver
+    return true # just to fake
+    # UsersMailer.welcome(@user).deliver
   end
 
   def can_execute_action?
@@ -135,15 +139,41 @@ service = WelcomeMailSendService.new(user)
 service.execute
 ```
 
-#### Sample output 
+#### Sample outputs
+
+**Success:**
 
 ```
-I, [2016-07-15T11:57:38.438092 #16753]  INFO -- : Routine details: Send welcome email to user Rafael Fidelis(rafa_fidelis@yahoo.com.br) at 2016-07-15 11:57:38 -0300
+I, [2016-07-15T12:42:56.780943 #25358]  INFO -- : Routine details: Send welcome email to user 
+Rafael Fidelis(rafa_fidelis@yahoo.com.br)
 
-I, [2016-07-15T11:57:38.854385 #16753]  INFO -- : Routine started at: 2016-07-15 11:57:38 -0300
+I, [2016-07-15T12:42:56.781087 #25358]  INFO -- : Routine started at: 2016-07-15 12:42:56 -0300
 
-I, [2016-07-15T11:57:38.854609 #16753]  INFO -- : success sent welcome email to user Rafael Fidelis(rafa_fidelis@yahoo.com.br)
+I, [2016-07-15T12:42:56.781244 #25358]  INFO -- : Success sent welcome email to user 
+Rafael Fidelis(rafa_fidelis@yahoo.com.br)
+
+I, [2016-07-15T12:42:56.781343 #25358]  INFO -- : Routine ended at: 2016-07-15 12:42:56 -0300
+
 ```
+
+**Error:**
+
+```
+I, [2016-07-15T12:43:58.060858 #26371]  INFO -- : Routine details: Send welcome email to user 
+Rafael Fidelis(rafa_fidelis@yahoo.com.br)
+
+I, [2016-07-15T12:43:58.060994 #26371]  INFO -- : Routine started at: 2016-07-15 12:43:58 -0300
+
+W, [2016-07-15T12:43:58.061094 #26371]  WARN -- : Something went wrong :(
+
+E, [2016-07-15T12:43:58.092449 #26371] ERROR -- : Error sending welcome email to user Rafael Fidelis(rafa_fidelis@yahoo.com.br). Details below
+
+E, [2016-07-15T12:43:58.092539 #26371] ERROR -- : ["translation missing: en.nifty_services.errors.users.yet_received_welcome_mailer"]
+
+I, [2016-07-15T12:43:58.092678 #26371]  INFO -- : Routine ended at: 2016-07-15 12:43:58 -0300
+
+```
+
 <br />
 
 This is a very basic example of how simple is working with services, let me clairify some things to better understanding:

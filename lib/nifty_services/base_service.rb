@@ -29,7 +29,7 @@ module NiftyServices
 
     class << self
       def register_callback(callback_name, method_name, &block)
-        method_name = normalized_callback_name(method_name)
+        method_name = Util.normalized_callback_name(method_name)
 
         @@registered_callbacks[self.name.to_sym][callback_name] ||= []
         @@registered_callbacks[self.name.to_sym][callback_name] << method_name
@@ -143,7 +143,7 @@ module NiftyServices
     end
 
     def register_callback_action(callback_name, &block)
-      cb_name = normalized_callback_name(method_name).to_sym
+      cb_name = normalized_callback_name(callback_name).to_sym
       @callbacks_actions[cb_name.to_sym] = block
     end
 
@@ -239,6 +239,7 @@ module NiftyServices
         error_message = process_error_message_for_key(message_key, options)
         add_error(error_message)
 
+        error_message
       end
     end
 

@@ -51,7 +51,7 @@ Or install it yourself as:
 
 NiftyServices provide a start basic service class for generic code  which is `NiftyServices::BaseService`, the very basic service structure is demonstrated below:
 
-```
+```ruby
 class User < Struct.new(:name, :email)
   # just to play around with results
   def received_welcome_mailer?
@@ -171,7 +171,7 @@ service.response_status_code # integer (eg: 200)
 
 So, grabbing our `SendWelcomeMailer` service again, we could do:
 
-```
+```ruby
 service = WelcomeMailSendService.new(User.new('test', 'test@test.com'))
 service.execute
 
@@ -229,7 +229,7 @@ end
 
 You can use any of the methods above with your `services instances`:
 
-```
+```ruby
 service.success? # boolean
 service.fail? # boolean
 service.errors # hash

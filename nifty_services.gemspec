@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["rafa_fidelis@yahoo.com.br"]
 
   spec.summary       = %q{Nifty and awesome service oriented architecture library for Ruby applications.}
-  spec.description   = %q{The killing simple services object oriented layer for Ruby (and Rails) applications to give robustness and cohesion back to your code.}
+  spec.description   = %q{The dead simple services object oriented layer for Ruby applications to give robustness and cohesion back to your code.}
   spec.homepage      = "https://github.com/fidelisrafael/nifty_services"
   spec.license       = "MIT"
 

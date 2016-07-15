@@ -1,0 +1,59 @@
+require 'logger'
+
+module NiftyServices
+  class Configuration
+
+    DEFAULT_I18N_NAMESPACE = "nifty_services"
+    DEFAULT_SERVICE_CONCERN_NAMESPACE = 'NitfyServices::Concerns'
+
+    RESPONSE_ERRORS_LIST = {
+      :bad_request           => 400,
+      :not_authorized        => 401,
+      :forbidden             => 403,
+      :not_found             => 404,
+      :unprocessable_entity  => 422,
+      :internal_server       => 500,
+      :not_implemented       => 501
+    }
+
+    class << self
+      def response_errors_list
+        RESPONSE_ERRORS_LIST
+      end
+
+      def add_response_error_method(reason, status_code)
+        response_errors_list[reason.to_sym] = status_code.to_i
+      end
+    end
+
+    attr_reader :logger, :options
+
+    attr_accessor :user_class, :service_concerns_namespace
+
+    def initialize(options = {})
+      @options = options
+      @service_concerns_namespace = default_service_concerns_namespace
+      @user_class = options[:user_class] || default_user_class
+      @logger = options[:logger] || default_logger
+    end
+
+    def i18n_namespace
+      @options[:i18n_namespace] || DEFAULT_I18N_NAMESPACE
+    end
+
+    private
+    def default_service_concerns_namespace
+      DEFAULT_SERVICE_CONCERN_NAMESPACE
+    end
+
+    def default_user_class
+      nil
+    end
+
+    def default_logger
+      logger = Logger.new("/dev/null")
+      logger.level = Logger::INFO
+      logger
+    end
+  end
+end

@@ -118,7 +118,7 @@ class WelcomeMailSendService < NiftyServices::BaseService
       return not_found_error!('users.not_found')
     end
 
-    unless @user.received_welcome_mailer?
+    if @user.received_welcome_mailer?
       # returns false
       return unprocessable_entity_error!('users.yet_received_welcome_mailer')
     end
@@ -132,7 +132,6 @@ class WelcomeMailSendService < NiftyServices::BaseService
     valid_object?(@user, User)
   end
 end
-
 
 user = User.new('Rafael Fidelis', 'rafa_fidelis@yahoo.com.br')
 service = WelcomeMailSendService.new(user)
@@ -166,9 +165,10 @@ I, [2016-07-15T12:43:58.060994 #26371]  INFO -- : Routine started at: 2016-07-15
 
 W, [2016-07-15T12:43:58.061094 #26371]  WARN -- : Something went wrong :(
 
-E, [2016-07-15T12:43:58.092449 #26371] ERROR -- : Error sending welcome email to user Rafael Fidelis(rafa_fidelis@yahoo.com.br). Details below
+E, [2016-07-15T12:43:58.092449 #26371] ERROR -- : Error sending welcome email to user 
+Rafael Fidelis(rafa_fidelis@yahoo.com.br). Details below
 
-E, [2016-07-15T12:43:58.092539 #26371] ERROR -- : ["translation missing: en.nifty_services.errors.users.yet_received_welcome_mailer"]
+E, [2016-07-15T12:43:58.092539 #26371] ERROR -- : ["User yet received welcome mail"]
 
 I, [2016-07-15T12:43:58.092678 #26371]  INFO -- : Routine ended at: 2016-07-15 12:43:58 -0300
 

@@ -78,21 +78,31 @@ RSpec.describe NiftyServices::BaseService, type: :service do
   end
 
   it 'must change response_status when error method is called' do
-    expect(base_service.response_status).to be 400
+    expect(base_service.response_status_code).to be 400
+    expect(base_service.response_status).to be :bad_request
     base_service.send(:not_found_error, 'spec')
-    expect(base_service.response_status).to be 404
+    expect(base_service.response_status_code).to be 404
+    expect(base_service.response_status).to be :not_found
   end
 
   it 'must have 201 response_status after success_created_response' do
-    expect(base_service.response_status).to be 400
+    expect(base_service.response_status_code).to be 400
+    expect(base_service.response_status).to be :bad_request
+
     base_service.send(:success_created_response)
-    expect(base_service.response_status).to be 201
+
+    expect(base_service.response_status).to be :created
+    expect(base_service.response_status_code).to be 201
   end
 
   it 'must have 200 response_status after success_response' do
-    expect(base_service.response_status).to be 400
+    expect(base_service.response_status_code).to be 400
+    expect(base_service.response_status).to be :bad_request
+
     base_service.send(:success_response)
-    expect(base_service.response_status).to be 200
+
+    expect(base_service.response_status).to be :ok
+    expect(base_service.response_status_code).to be 200
   end
 
   it 'must have method to check if options value is enabled/disabled' do
@@ -106,11 +116,13 @@ RSpec.describe NiftyServices::BaseService, type: :service do
   end
 
   it 'must have generic error method do create new errors' do
-    expect(base_service.response_status).to be 400
+    expect(base_service.response_status_code).to be 400
+    expect(base_service.response_status).to be :bad_request
 
     base_service.send(:error, 422, 'unprocessable_entity')
 
-    expect(base_service.response_status).to be 422
+    expect(base_service.response_status_code).to be 422
+    expect(base_service.response_status).to be :unprocessable_entity
     expect(base_service.errors.last).to match /unprocessable_entity$/
   end
 
@@ -150,7 +162,8 @@ RSpec.describe NiftyServices::BaseService, type: :service do
 
   it 'ust allow initial response status' do
     base_service = NiftyServices::BaseService.new({}, 422)
-    expect(base_service.response_status).to be 422
+    expect(base_service.response_status_code).to be 422
+    expect(base_service.response_status).to be :unprocessable_entity
   end
 
   # it 'must translate error message' do

@@ -6,7 +6,7 @@ module NiftyServices
     DEFAULT_I18N_NAMESPACE = "nifty_services"
     DEFAULT_SERVICE_CONCERN_NAMESPACE = 'NitfyServices::Concerns'
 
-    RESPONSE_ERRORS_LIST = {
+    ERROR_RESPONSE_STATUS = {
       :bad_request           => 400,
       :not_authorized        => 401,
       :forbidden             => 403,
@@ -16,9 +16,14 @@ module NiftyServices
       :not_implemented       => 501
     }
 
+    SUCCESS_RESPONSE_STATUS = {
+      :ok => 200,
+      :created => 201
+    }
+
     class << self
       def response_errors_list
-        RESPONSE_ERRORS_LIST
+        ERROR_RESPONSE_STATUS
       end
 
       def add_response_error_method(reason, status_code)

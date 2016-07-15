@@ -1,7 +1,7 @@
 module NiftyServices
   class BaseService
 
-    attr_reader :options, :response_status, :errors
+    attr_reader :options, :response_status, :response_status_code, :errors
 
     CALLBACKS = [
       :after_initialize,
@@ -60,9 +60,9 @@ module NiftyServices
 
     def initialize(options = {}, initial_response_status = 400)
       @options = options.to_options!
-      @response_status = initial_response_status
       @errors = []
 
+      set_response_status(initial_response_status)
       initial_callbacks_setup
 
       call_callback(:after_initialize)
@@ -81,8 +81,9 @@ module NiftyServices
     end
 
     def response_status
-      @response_status ||= 400
+      @response_status ||= :bad_request
     end
+
 
     def changed?
       changed_attributes.any?
@@ -133,22 +134,54 @@ module NiftyServices
       @registered_callbacks = Hash.new {|k,v| k[v] = [] }
     end
 
-    def success_response(status = 200)
-      call_callback(:before_success)
+    def success_response(status = :ok)
+      unless Configuration::SUCCESS_RESPONSE_STATUS.key?(status.to_sym)
+        raise "#{status} is not a valid success response status"
+      end
 
-      @response_status = status
-      @success = true
-
-      call_callback(:after_success)
+      with_before_and_after_callbacks(:success) do
+        @success = true
+        set_response_status(status)
+      end
     end
 
     def success_created_response
-      success_response(201)
+      success_response(:created)
     end
 
-    def error(status, message_key, options={})
+    def set_response_status(status)
+      @response_status = response_status_reason_for(status)
+      @response_status_code = response_status_code_for(status)
+    end
+
+    def response_status_for(status)
+      error_list = Configuration::ERROR_RESPONSE_STATUS
+      success_list = Configuration::SUCCESS_RESPONSE_STATUS
+
+      select_method = [Symbol, String].member?(status.class) ? :key : :value
+
+      response_list = error_list.merge(success_list)
+
+      selected_status = response_list.select do |status_key, status_code|
+        if select_method == :key
+          status_key == status
+        else
+          status_code == status
+        end
+      end
+    end
+
+    def response_status_code_for(status)
+      response_status_for(status).values.first
+    end
+
+    def response_status_reason_for(status)
+      response_status_for(status).keys.first
+    end
+
+    def error(status, message_key, options = {})
       with_before_and_after_callbacks(:error) do
-        @response_status = status
+        set_response_status(status)
         error_message = process_error_message_for_key(message_key, options)
 
         add_error(error_message)

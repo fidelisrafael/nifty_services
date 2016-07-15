@@ -84,9 +84,16 @@ module NiftyServices
       @response_status ||= :bad_request
     end
 
-
     def changed?
       changed_attributes.any?
+    end
+
+    def valid_user?
+      user_class = NiftyServices.config.user_class
+
+      raise 'Invalid User class. Use NitfyService.config.user_class = ClassName' if user_class.blank?
+
+      valid_object?(@user, user_class)
     end
 
     def callback_fired?(callback_name)

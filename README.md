@@ -183,7 +183,7 @@ if service.success? # or unless service.fail?
 else
   puts 'Error sending email, details below:'
   puts 'Status: %s' % service.response_status
-  puts 'Status code: %s' service.response_status_code
+  puts 'Status code: %s' % service.response_status_code
   puts service.errors
 end
 

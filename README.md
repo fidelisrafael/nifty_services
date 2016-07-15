@@ -72,11 +72,13 @@ class WelcomeMailSendService < NiftyServices::BaseService
   end
 
   after_initialize do
-    log.info('Routine details: Send welcome email to user %s(%s) at %s' % [@user.name, @user.email, Time.now])
+    user_data = [@user.name, @user.email, Time.now]
+    log.info('Routine details: Send welcome email to user %s(%s) at %s' % user_data)
   end
 
   after_success do
-    log.info('success sent welcome email to user %s(%s)' % [@user.name, @user.email])
+    user_data = [@user.name, @user.email]
+    log.info('success sent welcome email to user %s(%s)' % user_data)
   end
 
   before_error do
@@ -84,7 +86,8 @@ class WelcomeMailSendService < NiftyServices::BaseService
   end
 
   after_error do
-    log.error('error sending welcome email to user %s(%s)' % [@user.name, @user.email])
+    user_data = [@user.name, @user.email]
+    log.error('error sending welcome email to user %s(%s)' % user_data)
   end
 
   def initialize(user, options = {})
@@ -102,7 +105,7 @@ class WelcomeMailSendService < NiftyServices::BaseService
 
   private
   def send_mail_to_user
-     UsersMailer.welcome(@user).deliver
+    UsersMailer.welcome(@user).deliver
   end
 
   def can_execute_action?

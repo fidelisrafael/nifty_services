@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{Nifty and awesome service oriented architecture library for Ruby applications.}
   spec.description   = %q{The killing simple services object oriented layer for Ruby (and Rails) applications to give robustness and cohesion back to your code.}
-  spec.homepage      = "https:/github.com/fidelisrafael/nifty_services"
+  spec.homepage      = "https://github.com/fidelisrafael/nifty_services"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }

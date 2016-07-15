@@ -14,6 +14,7 @@ module NiftyServices
   autoload :Configuration,      'nifty_services/configuration'
   autoload :Error,              'nifty_services/errors'
   autoload :Errors,             'nifty_services/errors'
+  autoload :Util,             'nifty_services/util'
 
   class << self
     def configuration(&block)

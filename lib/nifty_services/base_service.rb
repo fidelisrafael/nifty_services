@@ -1,10 +1,16 @@
+require 'pry'
+
 module NiftyServices
   class BaseService
 
-    attr_reader :options, :response_status, :response_status_code, :errors
+    attr_reader :response_status, :response_status_code
+    attr_reader :options, :errors, :logger
 
     CALLBACKS = [
+      :before_initialize,
       :after_initialize,
+      :before_execute,
+      :after_execute,
       :before_error,
       :after_error,
       :before_success,
@@ -23,7 +29,7 @@ module NiftyServices
 
     class << self
       def register_callback(callback_name, method_name, &block)
-        method_name = "#{method_name.to_s.gsub(/\Z_callback/, '')}_callback"
+        method_name = normalized_callback_name(method_name)
 
         @@registered_callbacks[self.name.to_sym][callback_name] ||= []
         @@registered_callbacks[self.name.to_sym][callback_name] << method_name
@@ -41,7 +47,7 @@ module NiftyServices
       end
 
       def define_error_response_method(reason_string, status_code)
-        method_name = "#{reason_string.to_s.gsub(/\Z_error/, '')}_error"
+        method_name = Util.normalized_callback_name(reason_string, '_error')
 
         define_method method_name do |message_key, options = {}|
           error(status_code, message_key, options)
@@ -49,6 +55,12 @@ module NiftyServices
 
         define_method "#{method_name}!" do |message_key, options = {}|
           error!(status_code, message_key, options)
+        end
+      end
+
+      CALLBACKS.each do |callback_name|
+        define_method callback_name do |&block|
+          register_callback_action(callback_name, &block)
         end
       end
     end
@@ -61,11 +73,12 @@ module NiftyServices
     def initialize(options = {}, initial_response_status = 400)
       @options = options.to_options!
       @errors = []
+      @logger = options[:logger] || default_logger
+      @executed = false
 
-      set_response_status(initial_response_status)
-      initial_callbacks_setup
-
-      call_callback(:after_initialize)
+      with_before_and_after_callbacks(:initialize) do
+        set_response_status(initial_response_status)
+      end
     end
 
     def valid?
@@ -82,6 +95,10 @@ module NiftyServices
 
     def response_status
       @response_status ||= :bad_request
+    end
+
+    def changed_attributes
+      []
     end
 
     def changed?
@@ -119,14 +136,15 @@ module NiftyServices
     end
 
     def register_callback(callback_name, method_name, &block)
-      method_name = :"#{method_name.to_s.gsub(/\Z_callback/, '')}_callback"
+      method_name = normalized_callback_name(method_name).to_sym
 
       @registered_callbacks[callback_name.to_sym] << method_name
+      register_callback_action(callback_name, &block)
     end
 
     def register_callback_action(callback_name, &block)
-      cb_name = :"#{callback_name.to_s.gsub(/\Z_callback/, '')}_callback"
-      @callbacks_actions[cb_name] = block
+      cb_name = normalized_callback_name(method_name).to_sym
+      @callbacks_actions[cb_name.to_sym] = block
     end
 
     def add_error(error)
@@ -134,11 +152,37 @@ module NiftyServices
       @errors.send(add_method, error)
     end
 
+    def default_logger
+      NiftyServices.config.logger
+    end
+
+    alias :log :logger
+
+    def executed?
+      @executed == true
+    end
+
+    alias :runned? :executed?
+
     private
-    def initial_callbacks_setup
+    def execute_action(&block)
+      return nil if executed?
+
+      block_response = with_before_and_after_callbacks(:execute, &block)
+
+      @executed = true
+
+      self # allow chaining
+    end
+
+    def callbacks_setup
+      return nil if @callbacks_setup
+
       @fired_callbacks, @custom_fired_callbacks = {}, {}
       @callbacks_actions = {}
       @registered_callbacks = Hash.new {|k,v| k[v] = [] }
+
+      @callbacks_setup = true
     end
 
     def success_response(status = :ok)
@@ -187,13 +231,14 @@ module NiftyServices
     end
 
     def error(status, message_key, options = {})
+      @success = false
+
       with_before_and_after_callbacks(:error) do
         set_response_status(status)
-        error_message = process_error_message_for_key(message_key, options)
 
+        error_message = process_error_message_for_key(message_key, options)
         add_error(error_message)
 
-        error_message
       end
     end
 
@@ -209,7 +254,7 @@ module NiftyServices
     def call_callback(callback_name)
       callback_name = callback_name.to_s.underscore.to_sym
 
-      if self.respond_to?(callback_name, true) # include private methods
+      if has_callback?(callback_name)
         @fired_callbacks[callback_name.to_sym] = true
 
         invoke_callback(method(callback_name))
@@ -218,6 +263,12 @@ module NiftyServices
 
       # allow chained methods
       self
+    end
+
+    def has_callback?(callback_name)
+      _callback_name = normalized_callback_name(callback_name).to_sym
+       # include private methods
+      respond_to?(callback_name, true) || respond_to?(_callback_name, true)
     end
 
     def valid_object?(record, expected_class)
@@ -262,15 +313,16 @@ module NiftyServices
 
       message
     end
-
     def with_before_and_after_callbacks(callback_basename, &block)
+      callbacks_setup
+
       call_callback(:"before_#{callback_basename}")
 
-      response = yield(block) if block_given?
+      block_response = yield(block) if block_given?
 
       call_callback(:"after_#{callback_basename}")
 
-      response
+      block_response
     end
 
     def call_registered_callbacks_for(callback_name)
@@ -312,6 +364,10 @@ module NiftyServices
 
     def callback_fired_in?(callback_list, callback_name)
       return callback_list[callback_name.to_sym].present?
+    end
+
+    def normalized_callback_name(callback_name, prefix = '_callback')
+      Util.normalized_callback_name(callback_name, prefix)
     end
 
     def invoke_callback(method)

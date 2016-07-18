@@ -99,7 +99,7 @@ Now you know the basic concepts and philosophy of `NiftyServices`, lets start wo
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'nifty_services'
+gem 'nifty_services', '~> 0.0.4'
 ```
 
 And then execute:

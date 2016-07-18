@@ -31,9 +31,9 @@ module NiftyServices
       end
     end
 
-    attr_reader :logger, :options, :i18n_namespace
+    attr_reader :options
 
-    attr_accessor :user_class, :service_concerns_namespace
+    attr_accessor :logger, :i18n_namespace, :user_class, :service_concerns_namespace
 
     def initialize(options = {})
       @options = options

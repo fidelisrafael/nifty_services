@@ -37,28 +37,31 @@ module NiftyServices
       super(options)
     end
 
-    def execute
-      not_implemented_exception(__method__)
+    def changed_attributes
+      []
+    end
+
+    def changed?
+      changed_attributes.any?
     end
 
     def record_type
       not_implemented_exception(__method__)
     end
 
-    def record_params
+    def record_attributes_hash
       not_implemented_exception(__method__)
     end
 
-    def record_params_whitelist
+    def record_attributes_whitelist
       not_implemented_exception(__method__)
     end
 
-    def record_allowed_params
-      filter_hash(record_params, record_params_whitelist)
+    def record_allowed_attributes
+      filter_hash(record_attributes_hash, record_attributes_whitelist)
     end
 
-    alias :record_whitelisted_params :record_allowed_params
-    alias :record_safe_params :record_allowed_params
+    alias :record_safe_attributes :record_allowed_attributes
 
     private
     def array_values_from_hash(options, key, root = nil)
@@ -77,14 +80,18 @@ module NiftyServices
       array_values_from_string(values)
     end
 
+    def invalid_user_error_key
+      %s(users.not_found)
+    end
+
+    def validate_user?
+      true
+    end
+
     alias :array_values_from_params :array_values_from_hash
 
     def array_values_from_string(string)
       string.to_s.split(/\,/).map(&:squish)
-    end
-
-    def record_params
-      not_implemented_exception(__method__)
     end
 
     def record_error_key

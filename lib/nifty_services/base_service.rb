@@ -26,7 +26,7 @@ module NiftyServices
     end
 
     def initialize(options = {}, initial_response_status = 400)
-      @options = options.to_options!
+      @options = default_options.to_options!.merge(options).to_options!
       @errors = []
       @logger = options[:logger] || default_logger
       @executed = false
@@ -34,6 +34,10 @@ module NiftyServices
       with_before_and_after_callbacks(:initialize) do
         set_response_status(initial_response_status)
       end
+    end
+
+    def execute
+      not_implemented_exception(__method__)
     end
 
     def valid?
@@ -50,14 +54,6 @@ module NiftyServices
 
     def response_status
       @response_status ||= :bad_request
-    end
-
-    def changed_attributes
-      []
-    end
-
-    def changed?
-      changed_attributes.any?
     end
 
     def valid_user?
@@ -98,20 +94,28 @@ module NiftyServices
     alias :runned? :executed?
 
     private
+    def default_options
+      {}
+    end
+
     def can_execute?
       not_implemented_exception(__method__)
     end
 
     def execute_action(&block)
-      return nil if executed?
+      begin
+        return nil if executed?
 
-      with_before_and_after_callbacks(:execute) do
-        if can_execute?
-          yield(block) if block_given?
+        with_before_and_after_callbacks(:execute) do
+          if can_execute?
+            yield(block) if block_given?
+          end
         end
-      end
 
-      @executed = true
+        @executed = true
+      rescue Exception => e
+        add_error(e)
+      end
 
       self # allow chaining
     end
@@ -203,7 +207,7 @@ module NiftyServices
         changes << attribute if (old_attributes[attribute] != value)
       end
 
-      changes
+      changes.map(&:to_sym)
     end
 
     def i18n_namespace

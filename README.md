@@ -99,7 +99,7 @@ Now you know the basic concepts and philosophy of `NiftyServices`, lets start wo
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'nifty_services'
+gem 'nifty_services', '~> 0.0.4'
 ```
 
 And then execute:
@@ -213,15 +213,25 @@ class DailyNewsMailSendService < NiftyServices::BaseService
 
     return true
   end
+
   def send_mail_to_user
     # just to fake, a real implementation could be something like:
     # @user.send_daily_news_mail!
     return true
   end
-
+  
   def valid_user?
     # check if object is valid and is a User class type
     valid_object?(@user, User)
+  end
+  
+  # you can use `default_options` method to add default { keys => values } to @options
+  # so you can use the option_enabled?(key) to verify if option is enabled
+  # or option_disabled?(key) to verify is option is disabled
+  # This default values can be override when creating new instance of Service, eg:
+  # DailyNewsMailSendService.new(User.last, validate_api_key: false)
+  def default_options
+    { validate_api_key: true }
   end
 end
 
@@ -428,13 +438,14 @@ class PostCreateService < NiftyServices::BaseCreateService
  
  WHITELIST_ATTRIBUTES = [:title, :content]
  
- def record_params_whitelist
+ def record_attributes_whitelist
   WHITELIST_ATTRIBUTES
  end
  
- def build_record
-   # record_allowed_params auto magically use record_params_whitelist to remove unsafe attributes
-   @user.posts.build(record_allowed_params)
+ # use custom scope to create the record
+ # scope returned below must respond_to :build instance method
+ def build_record_scope
+   @user.posts
  end
  
  # this key is used for I18n translations
@@ -447,7 +458,7 @@ class PostCreateService < NiftyServices::BaseCreateService
    # check if user is trying to recreate a recent resource
    # this will return false if user has already created a post with
    # this title in the last 30 seconds (usefull to ban bots)
-   @user.posts.exists(title: record_allowed_params[:title], created_at: "NOW() - interval(30 seconds)")
+   @user.posts.exists(title: record_allowed_attributes[:title], created_at: "NOW() - interval(30 seconds)")
  end
 end
 
@@ -534,7 +545,7 @@ class PostUpdateService < NiftyServices::BaseUpdateService
   
   WHITELIST_ATTRIBUTES = [:title, :content] 
   
-  def record_allowed_params
+  def record_allowed_attributes
    WHITELIST_ATTRIBUTES
   end
   

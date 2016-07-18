@@ -5,8 +5,9 @@ module NiftyServices
       execute_action do
         with_before_and_after_callbacks(:update) do
           if can_execute_action?
-            @updated_record = update_record
-            @updated_record ||= @record
+            duplicate_records_before_update
+
+            @record = update_record
 
             if success_updated?
               success_response
@@ -21,58 +22,68 @@ module NiftyServices
 
     def changed_attributes
       return [] if fail?
-      @changed_attributes ||= changes(@old_record, @record, changed_attributes_array)
+      @changed_attributes ||= changes(@last_record, @record, changed_attributes_array)
     end
 
     private
 
     def changed_attributes_array
-      record_allowed_params.keys
+      record_allowed_attributes.keys
     end
 
     def success_updated?
-      @updated_record.valid?
+      @record.valid?
     end
 
     def update_errors
-      @updated_record.errors
+      @record.errors
     end
 
     def update_record
-      @record.class.send(:update, @record.id, record_allowed_params)
+      @record.class.send(:update, @record.id, record_allowed_attributes)
     end
 
-    def can_execute_action?
-
+    def can_execute?
       unless valid_record?
-        return not_found_error!("#{record_error_key}.not_found")
+        return not_found_error!(invalid_record_error_key)
       end
 
-      unless valid_user?
-        return not_found_error!('users.not_found')
-      end
-
-      unless can_update?
-        return forbidden_error!("#{record_error_key}.user_cant_update")
+      if validate_user? && !valid_user?
+        return not_found_error!(invalid_user_error_key)
       end
 
       return true
     end
 
-    def can_update?
-      return false unless valid_user?
-      return false unless valid_record?
+    def can_update_record?
+      unless user_can_update_record?
+        return (valid? ? forbidden_error!(user_cant_update_error_key) : false)
+      end
 
-      return user_can_update_record?
+      return true
+    end
+
+    def can_execute_action?
+      return can_update_record?
     end
 
     def user_can_update_record?
+      return not_implemented_exception(__method__) unless @record.respond_to?(:user_can_update?)
+
       @record.user_can_update?(@user)
     end
 
-    def after_success
-      @old_record = @record.dup
-      @record = @updated_record
+    def duplicate_records_before_update
+      @last_record = @record.dup
     end
+
+    def invalid_record_error_key
+      "#{record_error_key}.not_found"
+    end
+
+    def user_cant_update_error_key
+      "#{record_error_key}.user_cant_update"
+    end
+
   end
 end

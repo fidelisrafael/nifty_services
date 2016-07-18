@@ -7,20 +7,20 @@ module NiftyServices
     end
 
     def execute
-      with_before_and_after_callbacks(:create) do
-        if can_execute_action?
-          @record = build_record
+      execute_action do
+        with_before_and_after_callbacks(:create) do
+          if can_execute_action?
+            @record = build_record
 
-          if save_record
-            after_execute_success_response
-          else
-            errors = create_error_response(@record)
-            after_error_response(errors)
+            if save_record
+              after_execute_success_response
+            else
+              errors = create_error_response(@record)
+              after_error_response(errors)
+            end
           end
         end
       end
-
-      success?
     end
 
     private
@@ -57,7 +57,7 @@ module NiftyServices
       record_type.send(:new, record_params)
     end
 
-    def can_execute_action?
+    def can_execute?
       if validate_ip_on_create? && !can_create_with_ip?
         return forbidden_error!(%s(users.ip_temporarily_blocked))
       end

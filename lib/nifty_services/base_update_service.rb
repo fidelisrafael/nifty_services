@@ -2,21 +2,21 @@ module NiftyServices
   class BaseUpdateService < BaseCrudService
 
     def execute
-      with_before_and_after_callbacks(:update) do
-        if can_execute_action?
-          @updated_record = update_record
-          @updated_record ||= @record
+      execute_action do
+        with_before_and_after_callbacks(:update) do
+          if can_execute_action?
+            @updated_record = update_record
+            @updated_record ||= @record
 
-          if success_updated?
-            success_response
-          else
-            errors = update_errors
-            bad_request_error(errors) if errors.present?
+            if success_updated?
+              success_response
+            else
+              errors = update_errors
+              bad_request_error(errors) if errors.present?
+            end
           end
         end
       end
-
-      success?
     end
 
     def changed_attributes
@@ -27,7 +27,7 @@ module NiftyServices
     private
 
     def changed_attributes_array
-      record_params.keys
+      record_allowed_params.keys
     end
 
     def success_updated?
@@ -39,7 +39,7 @@ module NiftyServices
     end
 
     def update_record
-      @record.class.send(:update, @record.id, record_params)
+      @record.class.send(:update, @record.id, record_allowed_params)
     end
 
     def can_execute_action?
@@ -72,7 +72,7 @@ module NiftyServices
 
     def after_success
       @old_record = @record.dup
-      @record     = @updated_record
+      @record = @updated_record
     end
   end
 end

@@ -61,15 +61,6 @@ module NiftyServices
     alias :record_safe_params :record_allowed_params
 
     private
-
-    def valid_user?
-      user_class = NiftyServices.config.user_class
-
-      raise 'Invalid User class. Use NitfyService.config.user_class = ClassName' if user_class.blank?
-
-      valid_object?(@user, user_class)
-    end
-
     def array_values_from_hash(options, key, root = nil)
       options = options.symbolize_keys
 

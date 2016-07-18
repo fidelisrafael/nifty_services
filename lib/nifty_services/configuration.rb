@@ -6,7 +6,7 @@ module NiftyServices
     DEFAULT_I18N_NAMESPACE = "nifty_services"
     DEFAULT_SERVICE_CONCERN_NAMESPACE = 'NitfyServices::Concerns'
 
-    RESPONSE_ERRORS_LIST = {
+    ERROR_RESPONSE_STATUS = {
       :bad_request           => 400,
       :not_authorized        => 401,
       :forbidden             => 403,
@@ -16,9 +16,14 @@ module NiftyServices
       :not_implemented       => 501
     }
 
+    SUCCESS_RESPONSE_STATUS = {
+      :ok => 200,
+      :created => 201
+    }
+
     class << self
       def response_errors_list
-        RESPONSE_ERRORS_LIST
+        ERROR_RESPONSE_STATUS
       end
 
       def add_response_error_method(reason, status_code)
@@ -26,7 +31,7 @@ module NiftyServices
       end
     end
 
-    attr_reader :logger, :options
+    attr_reader :logger, :options, :i18n_namespace
 
     attr_accessor :user_class, :service_concerns_namespace
 
@@ -34,11 +39,12 @@ module NiftyServices
       @options = options
       @service_concerns_namespace = default_service_concerns_namespace
       @user_class = options[:user_class] || default_user_class
+      @i18n_namespace = @options[:i18n_namespace] || default_i18n_namespace
       @logger = options[:logger] || default_logger
     end
 
-    def i18n_namespace
-      @options[:i18n_namespace] || DEFAULT_I18N_NAMESPACE
+    def default_i18n_namespace
+       DEFAULT_I18N_NAMESPACE
     end
 
     private

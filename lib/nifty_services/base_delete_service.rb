@@ -2,22 +2,22 @@ module NiftyServices
   class BaseDeleteService < BaseCrudService
 
     def execute
-      with_before_and_after_callbacks(:delete) do
-        if can_execute_action?
-          if destroy_record
-            success_response
-          else
-            bad_request_error(@record.errors)
+      execute_action do
+        with_before_and_after_callbacks(:delete) do
+          if can_execute_action?
+            if destroy_record
+              success_response
+            else
+              bad_request_error(@record.errors)
+            end
           end
         end
       end
-
-      success?
     end
 
     private
     def destroy_record
-      @record.destroy
+      @record.try(:destroy) || @record.try(:delete)
     end
 
     def can_execute_action?

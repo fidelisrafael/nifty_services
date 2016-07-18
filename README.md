@@ -208,7 +208,7 @@ class DailyNewsMailSendService < NiftyServices::BaseService
 
     unless @user.abble_to_receive_daily_news_mail?
       # returns false
-      return forbidden_error!('users.yet_received_daily_news_mail')
+      return forbidden_error!('users.already_received_daily_news_mail')
     end
 
     return true
@@ -268,7 +268,7 @@ W, [2016-07-15T17:12:10.955186 #756]  WARN -- : Something went wrong
 
 E, [2016-07-15T17:12:11.019645 #756] ERROR -- : Error sending email to user. See details below :(
 
-E, [2016-07-15T17:12:11.019838 #756] ERROR -- : ["User yet received daily news mail today"]
+E, [2016-07-15T17:12:11.019838 #756] ERROR -- : ["User has already received daily news mail today"]
 
 I, [2016-07-15T17:12:11.020073 #756]  INFO -- : Routine ended at: 2016-07-15 17:12:11 -0300
 
@@ -387,7 +387,7 @@ error!(409, :conflict_error, reason: 'unkown')
 
 #### Custom error response methods
 
-But you can always add new convenience errors methods via API, this way you gain more expressivity and sintax sugar:
+But you can always add new convenience errors methods via API, this way you will have more expressivity and sintax sugar:
 
 ```ruby
 ## API
@@ -397,7 +397,7 @@ NiftyServices.add_response_error_method(status, status_code)
 
 NiftyServices.add_response_error_method(:conflict, 409)
 
-## now you gain the methods:
+## now you have the methods:
 
 ## conflict_error(:conflict_error)
 ## conflit_error!(:conflict_error)
@@ -409,7 +409,7 @@ NiftyServices.add_response_error_method(:conflict, 409)
 
 So, until now we saw how to use `NiftyServices::BaseService` to create generic services to couple specific domain logic for actions,  this is very usefull, but things get a lot better when you're working with **CRUD** actions for your api.
 
-Above, an example of **Create, Update and Delete** CRUD services for `Post` resource:
+Follow an example of **Create, Update and Delete** CRUD services for `Post` resource:
 
 ## :white_check_mark: CRUD: Create
 
@@ -445,7 +445,7 @@ class PostCreateService < NiftyServices::BaseCreateService
  def user_can_create_record?
    # (here you can do any kind of validation, eg:)
    # check if user is trying to recreate a recent resource
-   # this will return false if user yet created a post with
+   # this will return false if user has already created a post with
    # this title in the last 30 seconds (usefull to ban bots)
    @user.posts.exists(title: record_allowed_params[:title], created_at: "NOW() - interval(30 seconds)")
  end
@@ -817,9 +817,9 @@ NiftyServices::BaseCreateService.class_eval do
   end
 end
 
-# This register an callback for ALL services who inherit from `NiftyServices::BaseCreateService`
+# This register a callback for ALL services who inherit from `NiftyServices::BaseCreateService`
 # In other words: Every and all records created in my application will be tracked
-# I can believe that's is easy like this, I need a beer right now!
+# I can believe that is easy like this, I need a beer right now!
 NiftyServices::BaseCreateService.register_callback(:after_success, :create_origin_for_record) do
   create_origin(@record, @options)
 end
@@ -859,7 +859,7 @@ end
 
 ### Rails <a name="frameworks-rails"></a>
 
-You need a very minimal setup to integrate with you existing or new Rails application. I prefer to put my services files inside the `lib/services` folder, cause this allow better namespacing configuration over `app/services`, but this is up to you to decide.
+You need a very minimal setup to integrate with your existing or new Rails application. I prefer to put my services files inside the `lib/services` folder, cause this allow better namespacing configuration over `app/services`, but this is up to you to decide.
 
 First thing to do is add `lib/` folder in `autoload` path, place the following in your `config/application.rb`
 
@@ -875,13 +875,13 @@ Second, create `lib/services` directory:
 `$ mkdir -p lib/services/v1/users`
 
 Next, configure:  
-**Note**:  See Configurations section below to see all available configs
 
 ```ruby
 NiftyServices.configure do |config|
  config.user_class = User
 end
 ```
+**Note**:  See [Configurations](#construction-configuration-construction) section to see all available configs
 
 Create your first service:
 
@@ -909,7 +909,7 @@ class UsersController < BaseController
 end
 ```
 
-This can be even better if you move response code to an helper:
+This can be even better if you move response code to a helper:
 
 ```ruby
 # helpers/users_helper.rb
@@ -920,7 +920,7 @@ module UsersHelper
     generic_response_for_service(service, success_response)
   end
 
-  # THIS IS GREAT, you can use this method to standartize ALL of your
+  # THIS IS GREAT, you can use this method to standardize ALL of your
   # endpoints responses, THIS IS SO FUCKING COOL!
   def generic_response_for_service(service, success_response)
     default_response = {

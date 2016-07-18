@@ -25,7 +25,16 @@ module NiftyServices
 
     private
     def save_record
-      @record.save
+      begin
+        @record.save
+      rescue => e
+        on_save_record_error(e)
+        return false
+      end
+    end
+
+    def on_save_record_error(error)
+      return unprocessable_entity_error!(error)
     end
 
     def create_error_response(record)
@@ -44,17 +53,19 @@ module NiftyServices
     end
 
     def build_record
-      _record_params = record_allowed_params
-
-      if record_type.present? && _record_params.present?
-        return build_from_record_type(_record_params)
+      if record_type.present?
+        return build_from_record_type(record_allowed_attributes)
       end
 
       return not_implemented_exception(__method__)
     end
 
-    def build_from_record_type(record_params)
-      record_type.send(:new, record_params)
+    def build_from_record_type(params)
+      if !build_record_scope.nil? && build_record_scope.respond_to?(:build)
+        return build_record_scope.send(:build, params)
+      end
+
+      record_type.send(:new, params)
     end
 
     def can_execute?
@@ -62,25 +73,27 @@ module NiftyServices
         return forbidden_error!(%s(users.ip_temporarily_blocked))
       end
 
-      unless valid_user?
-        return not_found_error!(%s(users.not_found))
+      if validate_user? && !valid_user?
+        return not_found_error!(invalid_user_error_key)
       end
 
-      unless can_create?
-        if @errors.blank?
-          return forbidden_error!("#{record_error_key}.user_cant_create")
-        else
-          return false
-        end
-      end
-
-      return valid?
+      return true
     end
 
-    def can_create?
-      return false unless valid_user?
+    def can_create_record?
+      unless user_can_create_record?
+        return (valid? ? forbidden_error!(user_cant_create_error_key) : false)
+      end
 
-      return user_can_create_record?
+      return true
+    end
+
+    def user_can_create_record?
+      not_implemented_exception(__method__)
+    end
+
+    def can_execute_action?
+      return can_create_record?
     end
 
     def can_create_with_ip?
@@ -92,8 +105,12 @@ module NiftyServices
       false
     end
 
-    def user_can_create_record?
-      not_implemented_exception(__method__)
+    def build_record_scope
+      nil
+    end
+
+    def user_cant_create_error_key
+      "#{record_error_key}.user_cant_create"
     end
   end
 end

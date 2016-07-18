@@ -61,6 +61,7 @@ do for you and your project. Good reading, and if you have some question, [pleas
    * [Web Frameworks integration](#web-frameworks-integrations)
       * [Ruby on Rails](#frameworks-rails)
       * [Grape/Sinatra/Rack](#frameworks-rack) 
+      * [Sample Integrations](#integration-examples)  
    * [ Basic Services class Markups](#pray-basic-service-markups-raised_hands)
       * [BaseCreateService Basic Markup](#basecreateservice-basic-markup)
       * [BaseUpdateService Basic Markup](#baseupdateservice-basic-markup)
@@ -987,11 +988,15 @@ Well, the integration here don't variate too much from Rails, just follow the st
 **4 -** Create helpers to handle service response  
 **5 -** Be happy and go party!  
 
-Need examples? Check out one of the following repositories:  
+---
 
+## Integration Examples
+
+Need examples of integrations fully working? Check out one of the following repositories:  
+
+[NiftyServices - Sinatra Sample](https://github.com/fidelisrafael/nifty_services-sinatra_example)  
 NiftyServices - Rails Sample    
 NiftyServices - Grape Sample   
-NiftyServices - Sinatra Sample   
 
 ---
 

@@ -4,12 +4,12 @@
 
 Nifty Services comes to solve your Ruby applications(*including but not limited to* Rails, Grape, Sinatra, and plain Ruby) code mess with **simplicity in mind**!
 
-NiftyServices provider a very nifty, simple & clear API to **organize and reuse** your application **domain logic in plain Ruby Services Objects** turning your codebase in a very extensible, standardized and reusable components.
+NiftyServices provides a very nifty, simple & clear API to **organize and reuse** your application **domain logic in plain Ruby Services Objects** turning your codebase in a very extensible, standardized and reusable components.
 
 **Most important:** You and your team win what I consider the best benefit when using Nifty Services: **Easily and scalable maintained code.**  
  Believe me, you'll fall in :heart_eyes: with this small piece of code, keep reading!
 
-This gem was designed and conventioned to be used specially with **Web API applications**, but this is just a convention, you can use it's even with [shoes (for desktop apps)](https://github.com/shoes/shoes) applications if you  want, for example.
+This gem was designed and conventioned to be used specially with **Web API applications**, but this is just a convention, you can use it even with [shoes (for desktop apps)](https://github.com/shoes/shoes) applications if you  want, for example.
 
 #### :book: I know, this README is very huge
 

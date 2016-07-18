@@ -1,0 +1,7 @@
+# Logfile created on 2016-07-15 17:46:01 -0300 by logger.rb/53141
+I, [2016-07-15T17:46:01.453040 #30030]  INFO -- : Routine Details: Send daily news email to user Rafael Fidelis(rafa_fidelis@yahoo.com.br)
+I, [2016-07-15T17:46:01.453179 #30030]  INFO -- : Routine started at: 2016-07-15 17:46:01 -0300
+W, [2016-07-15T17:46:01.453464 #30030]  WARN -- : Something went wrong
+E, [2016-07-15T17:46:01.484243 #30030] ERROR -- : Error sending email to user. See details below :(
+E, [2016-07-15T17:46:01.484330 #30030] ERROR -- : ["translation missing: en.nifty_services.errors.users.yet_received_daily_news_mail"]
+I, [2016-07-15T17:46:01.484470 #30030]  INFO -- : Routine ended at: 2016-07-15 17:46:01 -0300

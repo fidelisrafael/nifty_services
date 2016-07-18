@@ -291,7 +291,7 @@ Note: A `NotImplementedError` exception will be raised if service won't define y
 
 * &#9745; There's a very simple DSL for marking result as success/fail (eg: `unprocessable_entity_error!` or `success_response`).  
 
- * &#9745; Simple DSL for actions callbacks inside current execution context. (eg: `after_success` or `before_error`)   
+* &#9745; Simple DSL for actions callbacks inside current execution context. (eg: `after_success` or `before_error`)   
 Note: You don't need to use the DSL if you don't want, you can simply define the methods(such as: `private def after_success; do_something; end`  
 
 This is the very basic concept of creating and executing a service object, now we need to know how to work with responses to get the most of our services, for this, let's digg in the mainly public API methods of `NiftyService::BaseService` class:

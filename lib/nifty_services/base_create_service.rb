@@ -49,9 +49,6 @@ module NiftyServices
       success_created_response
     end
 
-    def after_success
-    end
-
     def build_record
       if record_type.present?
         return build_from_record_type(record_allowed_attributes)

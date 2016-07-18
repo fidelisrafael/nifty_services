@@ -51,5 +51,9 @@ module NiftyServices
     def record_error_key
       not_implemented_exception(__method__)
     end
+
+    def action_name
+      not_implemented_exception(__method__)
+    end
   end
 end

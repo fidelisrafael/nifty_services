@@ -15,7 +15,7 @@ This gem was designed and conventioned to be used specially with **Web API appli
 
 As you can see, this README needs some time to be full read, but is very difficulty to explain all things, concepts and philosophy of this gem without writing a lot, we can't escape this :(   
 
-But remember one thing: This is a **tecnical documentation**, not a blog post, I'm pretty sure you can take 1 or 2 hours + :coffee: to better understand all NiftyServices can do for you and your project. Good reading, and if you have some question, [please let me know](/issues/new).
+But remember one thing: This is a **tecnical documentation**, not a blog post, I'm pretty sure you can take about 30 minutes + some cups of :coffee: to better understand all NiftyServices can do for you and your project. Good reading, and if you have some question, [please let me know](/issues/new).
 
 ---
 
@@ -139,7 +139,7 @@ class SemanticServiceName < NiftyServices::BaseService
 
     return not_found_error!('errors.message_key') if another_condition
 
-    return unprocessable_entity_error('errors.message_key') if other_condition
+    return unprocessable_entity_error!('errors.message_key') if other_condition
 
     # ok, this service can be executed
     return true

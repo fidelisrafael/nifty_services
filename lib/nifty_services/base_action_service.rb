@@ -8,12 +8,12 @@ module NiftyServices
     end
 
     def execute
-      with_before_and_after_callbacks(:action) do
-        if can_execute_action?
+      execute_action do
+        with_before_and_after_callbacks(:action) do
+          # here user can
+          execute_service_action
 
-          execute_action
-
-          if success_runned_action?
+          if valid?
             success_response
           else
             errors = action_errors
@@ -21,8 +21,6 @@ module NiftyServices
           end
         end
       end
-
-      success?
     end
 
     private
@@ -30,46 +28,23 @@ module NiftyServices
       []
     end
 
-    def can_execute_action?
-      unless valid_record?
-        return not_found_error!("#{record_error_key}.not_found")
-      end
-
-      unless valid_user?
-        return not_found_error!('users.not_found')
-      end
-
-      unless can_execute?
-        if @errors.blank?
-          return unprocessable_entity_error!("#{record_error_key}.user_cant_execute_#{action_name}")
-        else
-          return false
-        end
+    def can_execute?
+      unless user_can_execute_action?
+        return (valid? ? unprocessable_entity_error!(invalid_action_error_key) : false)
       end
 
       return true
     end
 
-    def can_execute?
-      return false unless valid_user?
-      return false unless valid_record?
-
-      user_can_execute_action?
-    end
-
-    def success_runned_action?
-      not_implemented_exception(__method__)
+    def invalid_action_error_key
+      "#{record_error_key}.cant_execute_#{action_name}"
     end
 
     def user_can_execute_action?
       not_implemented_exception(__method__)
     end
 
-    def execute_action
-      not_implemented_exception(__method__)
-    end
-
-    def valid_record?
+    def execute_service_action
       not_implemented_exception(__method__)
     end
 

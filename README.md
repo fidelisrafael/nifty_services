@@ -306,7 +306,7 @@ The code above demonstrate a very basic example of **how dead easy** is to work 
 * &#9745; `can_execute?` must be **ALWAYS** implemented in service classes, **ALWAYS**, this ensure that your code will **safely runned**.    
 Note: A `NotImplementedError` exception will be raised if service won't define your own `can_execute?` method.   
 
-* &#9745; There's a very simple DSL for marking result as success/fail (eg: `unprocessable_entity_error!` or `success_response`).  
+* &#9745; There's a very simple helper functions for marking result as success/fail (eg: `unprocessable_entity_error!` or `success_response`).  
 
 * &#9745; Simple DSL for actions callbacks inside current execution context. (eg: `after_success` or `before_error`)   
 Note: You don't need to use the DSL if you don't want, you can simply define the methods(such as: `private def after_success; do_something; end`  
@@ -450,7 +450,7 @@ class PostCreateService < NiftyServices::BaseCreateService
  end
  
  # use custom scope to create the record
- # scope returned below must respond_to :build instance method
+ # scope returned below must respond_to :build method
  def build_record_scope
    @user.posts
  end

@@ -1,5 +1,5 @@
 # NiftyServices
-[![Build Status](https://travis-ci.org/fidelisrafael/nifty_services.svg?branch=travis)](https://travis-ci.org/fidelisrafael/nifty_services)
+[![Build Status](https://travis-ci.org/fidelisrafael/nifty_services.svg)](https://travis-ci.org/fidelisrafael/nifty_services)
 ## Introduction
 
 Nifty Services comes to solve your Ruby applications(*including but not limited to* Rails, Grape, Sinatra, and plain Ruby) code mess with **simplicity in mind**!

@@ -1,21 +1,21 @@
-# NiftyServices 
-
+# NiftyServices
+[![Build Status](https://travis-ci.org/fidelisrafael/nifty_services.svg?branch=travis)](https://travis-ci.org/fidelisrafael/nifty_services)
 ## Introduction
 
 Nifty Services comes to solve your Ruby applications(*including but not limited to* Rails, Grape, Sinatra, and plain Ruby) code mess with **simplicity in mind**!
 
 NiftyServices provides a very nifty, simple & clear API to **organize and reuse** your application **domain logic in plain Ruby Services Objects** turning your codebase in a very extensible, standardized and reusable components.
 
-**Most important:** You and your team win what I consider the best benefit when using Nifty Services: **Easily and scalable maintained code.**  
+**Most important:** You and your team win what I consider the best benefit when using Nifty Services: **Easily and scalable maintained code.**
  Believe me, you'll fall in :heart_eyes: with this small piece of code, keep reading!
 
 This gem was designed and conventioned to be used specially with **Web API applications**, but this is just a convention, you can use it even with [shoes (for desktop apps)](https://github.com/shoes/shoes) applications if you  want, for example.
 
 #### :book: I know, this README is very huge
 
-As you can see, this README needs some time to be full read, but is very difficulty to explain all things, concepts and philosophy of this gem without writing a lot, we can't escape this :(   
+As you can see, this README needs some time to be full read, but is very difficulty to explain all things, concepts and philosophy of this gem without writing a lot, we can't escape this :(
 
-But remember one thing: This is a **tecnical documentation**, not a blog post, I'm pretty sure you can take about 30 minutes + some cups of :coffee: to better understand all NiftyServices can 
+But remember one thing: This is a **tecnical documentation**, not a blog post, I'm pretty sure you can take about 30 minutes + some cups of :coffee: to better understand all NiftyServices can
 do for you and your project. Good reading, and if you have some question, [please let me know](issues/new).
 
 ---
@@ -29,8 +29,8 @@ do for you and your project. Good reading, and if you have some question, [pleas
   * [Rich Service Objects](#package-rich-service-objects)
   * [Security & Access Level Control](#lock-security---access-control-level)
 * [Installation](#installation)
-* [Usage](#usage) 
-  * [Basic Service Markup](#basic-service-markup) 
+* [Usage](#usage)
+  * [Basic Service Markup](#basic-service-markup)
   * [How a Service must be created](#wrapping-things-up)
   * [Services API](#services-public-api)
     * [Full Public Service API Methods List](#full-public-api-methods-list)
@@ -42,26 +42,26 @@ do for you and your project. Good reading, and if you have some question, [pleas
     * [**Create** - BaseCreateService](#white_check_mark-crud-create)
       * [I18n Setup](#earth_americas-i18n-setup)
       * [Error - Invalid User](#alien-invalid-user)
-      * [Error - Not authorized](#no_entry_sign-not-authorized-to-create) 
+      * [Error - Not authorized](#no_entry_sign-not-authorized-to-create)
       * [Error - Invalid record](#boom-record-is-invalid)
-    * [**Update** - BaseUpdateService](#white_check_mark-crud-update)  
+    * [**Update** - BaseUpdateService](#white_check_mark-crud-update)
       * [I18n Setup](#earth_asia-i18n-setup)
-      * [Error - Invalid User](#update-resource-user-invalid)  
-      * [Error - Resource don't belongs to user](#update-resource-dont-belongs-to-user)  
-      * [Error - Resource dont exists](#update-resource-dont-exists)  
+      * [Error - Invalid User](#update-resource-user-invalid)
+      * [Error - Resource don't belongs to user](#update-resource-dont-belongs-to-user)
+      * [Error - Resource dont exists](#update-resource-dont-exists)
     * [**Delete** - BaseDeleteService](#white_check_mark-crud-delete)
-        * [I18n Setup](#earth_africa-i18n-setup)  
-        * [Error - Invalid User](#delete-resource-user-invalid)  
-        * [Error - Resource don't belongs to user](#delete-resource-dont-belongs-to-user)  
-        * [Error - Resource dont exists](#delete-resource-dont-exists)  
+        * [I18n Setup](#earth_africa-i18n-setup)
+        * [Error - Invalid User](#delete-resource-user-invalid)
+        * [Error - Resource don't belongs to user](#delete-resource-dont-belongs-to-user)
+        * [Error - Resource dont exists](#delete-resource-dont-exists)
    * [I18n Setup](#us-fr-jp-i18n-support-uk-es-de)
    * [Callbacks](#callbacks)
       * [Using custom callbacks](#creating-custom-callbacks)
    * [Configuration](#construction-configuration-construction)
    * [Web Frameworks integration](#web-frameworks-integrations)
       * [Ruby on Rails](#frameworks-rails)
-      * [Grape/Sinatra/Rack](#frameworks-rack) 
-      * [Sample Integrations](#integration-examples)  
+      * [Grape/Sinatra/Rack](#frameworks-rack)
+      * [Sample Integrations](#integration-examples)
    * [ Basic Services class Markups](#pray-basic-service-markups-raised_hands)
       * [BaseCreateService Basic Markup](#basecreateservice-basic-markup)
       * [BaseUpdateService Basic Markup](#baseupdateservice-basic-markup)
@@ -226,12 +226,12 @@ class DailyNewsMailSendService < NiftyServices::BaseService
     # @user.send_daily_news_mail!
     return true
   end
-  
+
   def valid_user?
     # check if object is valid and is a User class type
     valid_object?(@user, User)
   end
-  
+
   # you can use `default_options` method to add default { keys => values } to @options
   # so you can use the option_enabled?(key) to verify if option is enabled
   # or option_disabled?(key) to verify is option is disabled
@@ -261,7 +261,7 @@ service.execute
 #### :smile: Success:
 
 ```
-I, [2016-07-15T17:13:40.092854 #2480]  INFO -- : Routine Details: Send daily news email to user 
+I, [2016-07-15T17:13:40.092854 #2480]  INFO -- : Routine Details: Send daily news email to user
 Rafael Fidelis(rafa_fidelis@yahoo.com.br)
 
 I, [2016-07-15T17:13:40.092987 #2480]  INFO -- : Routine started at: 2016-07-15 17:13:40 -0300
@@ -276,7 +276,7 @@ I, [2016-07-15T17:13:40.093242 #2480]  INFO -- : Routine ended at: 2016-07-15 17
 #### :weary: Error:
 
 ```
-I, [2016-07-15T17:12:10.954792 #756]  INFO -- : Routine Details: Send daily news email to user 
+I, [2016-07-15T17:12:10.954792 #756]  INFO -- : Routine Details: Send daily news email to user
 Rafael Fidelis(rafa_fidelis@yahoo.com.br)
 
 I, [2016-07-15T17:12:10.955025 #756]  INFO -- : Routine started at: 2016-07-15 17:12:10 -0300
@@ -297,25 +297,25 @@ I, [2016-07-15T17:12:11.020073 #756]  INFO -- : Routine ended at: 2016-07-15 17:
 
 The code above demonstrate a very basic example of **how dead easy** is to work with Services, let me clarify some things to your better understanding:
 
-* &#9745; All services classes must inherit from `NiftyServices::BaseService`    
+* &#9745; All services classes must inherit from `NiftyServices::BaseService`
 
-* &#9745; For convention(but not a rule) all services must expose only `execute`(and of course, `initialize`) as public methods.  
+* &#9745; For convention(but not a rule) all services must expose only `execute`(and of course, `initialize`) as public methods.
 
-* &#9745; `execute_action(&block)` **MUST** be called to properly setup things in execution context.   
+* &#9745; `execute_action(&block)` **MUST** be called to properly setup things in execution context.
 
-* &#9745; `can_execute?` must be **ALWAYS** implemented in service classes, **ALWAYS**, this ensure that your code will **safely runned**.    
-Note: A `NotImplementedError` exception will be raised if service won't define your own `can_execute?` method.   
+* &#9745; `can_execute?` must be **ALWAYS** implemented in service classes, **ALWAYS**, this ensure that your code will **safely runned**.
+Note: A `NotImplementedError` exception will be raised if service won't define your own `can_execute?` method.
 
-* &#9745; There's a very simple helper functions for marking result as success/fail (eg: `unprocessable_entity_error!` or `success_response`).  
+* &#9745; There's a very simple helper functions for marking result as success/fail (eg: `unprocessable_entity_error!` or `success_response`).
 
-* &#9745; Simple DSL for actions callbacks inside current execution context. (eg: `after_success` or `before_error`)   
-Note: You don't need to use the DSL if you don't want, you can simply define the methods(such as: `private def after_success; do_something; end`  
+* &#9745; Simple DSL for actions callbacks inside current execution context. (eg: `after_success` or `before_error`)
+Note: You don't need to use the DSL if you don't want, you can simply define the methods(such as: `private def after_success; do_something; end`
 
 This is the very basic concept of creating and executing a service object, now we need to know how to work with responses to get the most of our services, for this, let's digg in the mainly public API methods of `NiftyService::BaseService` class:
 
 ---
 
-## Services Public API 
+## Services Public API
 
 Below, a list of most common public accessible methods for any instance of service:
 (Detailed usage and full API list is available below this section)
@@ -365,7 +365,7 @@ The first value in comments above is the value which will be defined to `service
 ---
 
 
-### :red_circle: Handling Error :boom: 
+### :red_circle: Handling Error :boom:
 
 By default, all services comes with following error methods:
 (**Hint**: See all available error methods [`here`](lib/nifty_services/configuration.rb#L10-L16))
@@ -410,7 +410,7 @@ But you can always add new convenience errors methods via API, this way you will
 ## API
 NiftyServices.add_response_error_method(status, status_code)
 
-## eg: 
+## eg:
 
 NiftyServices.add_response_error_method(:conflict, 409)
 
@@ -418,7 +418,7 @@ NiftyServices.add_response_error_method(:conflict, 409)
 
 ## conflict_error(:conflict_error)
 ## conflit_error!(:conflict_error)
-``` 
+```
 
 ---
 
@@ -432,7 +432,7 @@ Follow an example of **Create, Update and Delete** CRUD services for `Post` reso
 
 ```ruby
 class PostCreateService < NiftyServices::BaseCreateService
- 
+
  # record_type must be a object respond to :build and :save methods
  # is possible to access this record outside of service using
  # `service.record` or `service.post`
@@ -440,26 +440,26 @@ class PostCreateService < NiftyServices::BaseCreateService
  # record_type Post, alias_name: :user_post
  # This way, you can access the record using
  # `service.user_post`
- 
+
  record_type Post
- 
+
  WHITELIST_ATTRIBUTES = [:title, :content]
- 
+
  def record_attributes_whitelist
   WHITELIST_ATTRIBUTES
  end
- 
+
  # use custom scope to create the record
  # scope returned below must respond_to :build method
  def build_record_scope
    @user.posts
  end
- 
+
  # this key is used for I18n translations
  def record_error_key
    :posts
  end
- 
+
  def user_can_create_record?
    # (here you can do any kind of validation, eg:)
    # check if user is trying to recreate a recent resource
@@ -478,7 +478,7 @@ service.response_status_code # 200
 service.response_status # :created
 ```
 
-#### :earth_americas: I18n setup 
+#### :earth_americas: I18n setup
 
 You must have the following keys setup up in your locales files:
 
@@ -486,7 +486,7 @@ You must have the following keys setup up in your locales files:
  nifty_services:
    users:
      not_found: "Invalid or not found user"
-     ip_temporarily_blocked: "This IP is temporarily blocked from creating records" 
+     ip_temporarily_blocked: "This IP is temporarily blocked from creating records"
    # note: posts is the key return in `record_error_key` service method
    posts:
       user_cant_create: "User cant create this record"
@@ -546,16 +546,16 @@ service.response_status_code # 422
 
 ```ruby
 class PostUpdateService < NiftyServices::BaseUpdateService
-  
+
   # service.post or service.record
   record_type Post
-  
-  WHITELIST_ATTRIBUTES = [:title, :content] 
-  
+
+  WHITELIST_ATTRIBUTES = [:title, :content]
+
   def record_allowed_attributes
    WHITELIST_ATTRIBUTES
   end
-  
+
   # by default, internally @record must respond to
   # user_can_update(user)
   # so you can do specific validations per resource
@@ -563,7 +563,7 @@ class PostUpdateService < NiftyServices::BaseUpdateService
    # only system admins and owner can update this record
    @user.admin? || @user.id == @record.id
   end
-  
+
   def record_error_key
     :posts
   end
@@ -656,18 +656,18 @@ update_service.errors # ["Invalid or not found post"]
 class PostDeleteService < NiftyServices::BaseDeleteService
   # record_type object must respond to :destroy or :delete method
   record_type Post
-  
+
   def record_error_key
     :posts
   end
-  
+
   # below the code used internally, you can override to
   # create custom delete, but remembers that this method
   # must return a boolean value
   def destroy_record
     @record.try(:destroy) || @record.try(:delete)
   end
-  
+
   # by default, internally @record must respond to
   # @record.user_can_delete?(user)
   # so you can do specific validations per resource
@@ -767,7 +767,7 @@ NiftyServies.configure do |config|
 end
 ```
 
-Example config for `Post` and `Comment` resources using `my_app` locale namespace:  
+Example config for `Post` and `Comment` resources using `my_app` locale namespace:
 
 ```yml
 # default is nifty_services
@@ -823,10 +823,10 @@ NiftyServices::BaseCreateService.class_eval do
   def create_origin(originable, params = {})
     return unless originable.respond_to?(:create_origin)
     return unless create_origin?
-    
+
     originable.create_origin(origin_params(params))
   end
-  
+
   # for records which we don't need to create origins, just
   # overwrite this method inside service class turning it off with:
   # return false
@@ -853,16 +853,16 @@ Now, every record created in my application will have an associated `origin` obj
 There are only a few things you must want and have to configure for your services work properly, below you can see all needed configuration:
 
 ```ruby
-NiftyServices.config do |config|  
+NiftyServices.config do |config|
   # [optional - but very recommend! Please, do it]
-  # class used to control ACL 
+  # class used to control ACL
   config.user_class = User
-  
+
   # [optional]
   # global logger for all services
   # [Default: Logger.new('/dev/null')]
   config.logger = Logger.new('log/services_logger.log')
-  
+
   # [optional]
   # Namespace to lookup when using concerns with services
   # [Default: 'NitfyServices::Concerns']
@@ -892,7 +892,7 @@ Second, create `lib/services` directory:
 
 `$ mkdir -p lib/services/v1/users`
 
-Next, configure:  
+Next, configure:
 
 ```ruby
 NiftyServices.configure do |config|
@@ -915,7 +915,7 @@ class UsersController < BaseController
     service = Services::V1::Users::CreateService.new(params).execute
 
     default_response = { status: service.response_status, status_code: service.response_status_code }
-    
+
     if service.success?
       response = { user: service.user, subscription: service.subscription }
     else
@@ -982,21 +982,21 @@ Well done sir! Did you read the comments in `generic_response_for_service`? Read
 
 Well, the integration here don't variate too much from Rails, just follow the steps:
 
-**1 -** Decide where you'll put your services  
-**2 -** Code that dam amazing services!  
-**3 -** Instantiate the service in your framework entry point  
-**4 -** Create helpers to handle service response  
-**5 -** Be happy and go party!  
+**1 -** Decide where you'll put your services
+**2 -** Code that dam amazing services!
+**3 -** Instantiate the service in your framework entry point
+**4 -** Create helpers to handle service response
+**5 -** Be happy and go party!
 
 ---
 
 ## Integration Examples
 
-Need examples of integrations fully working? Check out one of the following repositories:  
+Need examples of integrations fully working? Check out one of the following repositories:
 
-[NiftyServices - Sinatra Sample](https://github.com/fidelisrafael/nifty_services-sinatra_example)  
-NiftyServices - Rails Sample    
-NiftyServices - Grape Sample   
+[NiftyServices - Sinatra Sample](https://github.com/fidelisrafael/nifty_services-sinatra_example)
+NiftyServices - Rails Sample
+NiftyServices - Grape Sample
 
 ---
 
@@ -1013,15 +1013,15 @@ class SomeCreateService < NiftyServices::BaseCreateService
  # [Required]
  # remember that inside the Service you always can use
  # @record variable to access current record
- # and from outside (service instance): 
+ # and from outside (service instance):
  # service.record or service.record_type
- # eg: 
+ # eg:
  # record_type BlogPost
  # service.record # BlogPost.new(...)
  # service.blog_post # BlogPost.new(...)
  # service.record == service.blog_post # true
  # alias_name can be used to create a custom alias name
- # eg: 
+ # eg:
  # record_type BlogPost, alias_name: :post
  # service.record # BlogPost.new(...)
  # service.post # BlogPost.new(...)
@@ -1035,9 +1035,9 @@ class SomeCreateService < NiftyServices::BaseCreateService
  # If this method is not implemented a NotImplementedError exception will be raised
  def user_can_create_record?
   return forbidden_error!('errors.some_error') if (some_validation)
-  
+
   return bad_request_error!('errors.some_other_error') if (another_validation)
-  
+
   # remember to return true after all validations
   # if you don't return true Service will not be able to create the record
   return true
@@ -1055,8 +1055,8 @@ class SomeCreateService < NiftyServices::BaseCreateService
  end
 
  # [Optional]
- # determine wheter user will be validate as valid object before 
- # record creation 
+ # determine wheter user will be validate as valid object before
+ # record creation
  # (default: true)
  def validate_user?
   return true
@@ -1177,7 +1177,7 @@ end
 
 ```ruby
 class SomeCustomActionService < NiftyServices::BaseActionService
-  
+
   # [required]
   # this is the action identifier used internally
   # and to generate error messages
@@ -1204,7 +1204,7 @@ class SomeCustomActionService < NiftyServices::BaseActionService
   def execute_service_action
     # (do some complex stuff)
   end
-    
+
   # You dont need to overwrite this method, just `record_error_key`
   # But it's important you know how final message key will be created
   # using the pattern below
@@ -1222,7 +1222,7 @@ end
 ```
 
 
---- 
+---
 
 ## Full Public API methods list
 
@@ -1268,7 +1268,7 @@ Currently NiftyServices don't have CLI(command line interface) generators, but i
 - :white_medium_small_square: Write better tests for `BaseActionServices`
 - :white_medium_small_square: Write tests for Configuration
 - :white_medium_small_square: Write tests for Callbacks
- 
+
 ---
 
 ## :computer: Development

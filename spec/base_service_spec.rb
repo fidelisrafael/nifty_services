@@ -3,38 +3,36 @@ require 'pry'
 
 RSpec.describe NiftyServices::BaseService, type: :service do
 
-  let(:base_service) { NiftyServices::BaseService.new }
-
-  it 'must be valid' do
-    base_service.valid?
-  end
+  it { expect(subject.valid?).to be_truthy }
 
   it 'must have error handle methods' do
     NiftyServices::Configuration.response_errors_list.each do |method, response_status|
-      expect(base_service.respond_to?("#{method}_error", true)).to be true
+      expect(subject.respond_to?("#{method}_error", true)).to be_truthy
     end
   end
 
   it 'must call callback after initialize' do
-    expect(base_service.callback_fired?(:after_initialize)).to be true
+    expect(subject.callback_fired?(:after_initialize)).to be_truthy
   end
 
-  it 'must register and fire new callbacks for instance callbacks' do
-    base_service.register_callback_action(:do_actions_before_success) do
-      # puts 'print something pretty before success'
+  context 'register and fire new callbacks for instance callbacks' do
+    before(:each) do
+      subject.register_callback_action(:do_actions_before_success) do
+        # puts 'print something pretty before success'
+      end
+
+      subject.register_callback_action(:do_actions_after_success) do
+        # puts 'print something pretty after success'
+      end
+
+      subject.register_callback(:before_success, :do_actions_before_success)
+      subject.register_callback(:after_success, :do_actions_after_success)
+
+      subject.send(:success_response)
     end
 
-    base_service.register_callback_action(:do_actions_after_success) do
-      # puts 'print something pretty after success'
-    end
-
-    base_service.register_callback(:before_success, :do_actions_before_success)
-    base_service.register_callback(:after_success, :do_actions_after_success)
-
-    base_service.send(:success_response)
-
-    expect(base_service.callback_fired?(:do_actions_before_success)).to be true
-    expect(base_service.callback_fired?(:do_actions_after_success)).to be true
+    it { expect(subject.callback_fired?(:do_actions_before_success)).to be_truthy }
+    it { expect(subject.callback_fired?(:do_actions_after_success)).to be_truthy }
   end
 
   it 'must propagate callbacks to children services' do
@@ -45,155 +43,196 @@ RSpec.describe NiftyServices::BaseService, type: :service do
     service = NiftyServices::BaseCreateService.new(Object.new)
     service.send(:success_response)
 
-    expect(service.callback_fired?(:write_to_log)).to be true
+    expect(service.callback_fired?(:write_to_log)).to be_truthy
   end
 
-  it 'must call before and after callbacks after success response' do
-    expect(base_service.callback_fired?(:before_success)).to be false
-    expect(base_service.callback_fired?(:after_success)).to be false
+  context 'call before and after callbacks after success response' do
+    it do
+      expect { subject.send(:success_response) }.to change {
+        subject.callback_fired?(:before_success)
+      }.from(false).to(true)
+    end
 
-    base_service.send(:success_response)
-
-    expect(base_service.callback_fired?(:before_success)).to be true
-    expect(base_service.callback_fired?(:after_success)).to be true
+    it do
+      expect { subject.send(:success_response) }.to change {
+        subject.callback_fired?(:after_success)
+      }.from(false).to(true)
+    end
   end
 
-  it 'must call callbacks before and after error' do
-    expect(base_service.callback_fired?(:before_error)).to be false
-    expect(base_service.callback_fired?(:after_error)).to be false
+  context 'call callbacks before and after error' do
 
-    base_service.send(:not_authorized_error, 'spec')
+    it do
+      expect { subject.send(:not_authorized_error, 'spec') }.to change {
+       subject.callback_fired?(:before_error)
+      }.from(false).to(true)
+    end
 
-    expect(base_service.callback_fired?(:before_error)).to be true
-    expect(base_service.callback_fired?(:after_error)).to be true
+    it do
+      expect { subject.send(:not_authorized_error, 'spec') }.to change {
+       subject.callback_fired?(:after_error)
+      }.from(false).to(true)
+    end
   end
 
-  it 'must use correct error namespace key' do
-    base_service.send(:not_authorized_error, '__not_existent_key__')
+  context 'use correct error namespace key' do
+    before(:each) do
+      subject.send(:not_authorized_error, '__not_existent_key__')
+    end
 
-    error_namespace = NiftyServices::Configuration::DEFAULT_I18N_NAMESPACE
-    error = base_service.errors.last
-
-    expect(error).to match error_namespace
+    it { expect(subject.errors.last).to match(NiftyServices::Configuration::DEFAULT_I18N_NAMESPACE) }
   end
 
-  it 'must change response_status when error method is called' do
-    expect(base_service.response_status_code).to be 400
-    expect(base_service.response_status).to be :bad_request
-    base_service.send(:not_found_error, 'spec')
-    expect(base_service.response_status_code).to be 404
-    expect(base_service.response_status).to be :not_found
+  context 'change response_status when error method is called' do
+    it do
+      expect { subject.send(:not_found_error, 'spec') }.to change {
+        subject.response_status_code
+      }.from(400).to(404)
+    end
+
+    it do
+      expect { subject.send(:not_found_error, 'spec') }.to change {
+        subject.response_status
+      }.from(:bad_request).to(:not_found)
+    end
   end
 
-  it 'must have 201 response_status after success_created_response' do
-    expect(base_service.response_status_code).to be 400
-    expect(base_service.response_status).to be :bad_request
+  context 'have 201 response_status after success_created_response' do
+    it do
+      expect { subject.send(:success_created_response) }.to change {
+        subject.response_status_code
+      }.from(400).to(201)
+    end
 
-    base_service.send(:success_created_response)
-
-    expect(base_service.response_status).to be :created
-    expect(base_service.response_status_code).to be 201
+    it do
+      expect { subject.send(:success_created_response) }.to change {
+        subject.response_status
+      }.from(:bad_request).to(:created)
+    end
   end
 
-  it 'must have 200 response_status after success_response' do
-    expect(base_service.response_status_code).to be 400
-    expect(base_service.response_status).to be :bad_request
+  context 'have 200 response_status after success_response' do
+    it do
+      expect { subject.send(:success_response) }.to change {
+        subject.response_status_code
+      }.from(400).to(200)
+    end
 
-    base_service.send(:success_response)
-
-    expect(base_service.response_status).to be :ok
-    expect(base_service.response_status_code).to be 200
+    it do
+      expect { subject.send(:success_response) }.to change {
+        subject.response_status
+      }.from(:bad_request).to(:ok)
+    end
   end
 
-  it 'must have method to check if options value is enabled/disabled' do
-    base_service = NiftyServices::BaseService.new(send_push_notification: true, create_users: false)
+  context 'have method to check if options value is enabled/disabled' do
+    subject { NiftyServices::BaseService.new(send_push_notification: true, create_users: false) }
 
-    expect(base_service.option_enabled?(:send_push_notification)).to be true
-    expect(base_service.option_enabled?(:create_users)).to be false
+    it { expect(subject.option_enabled?(:send_push_notification)).to be_truthy }
+    it { expect(subject.option_enabled?(:create_users)).to be_falsey }
 
-    expect(base_service.option_disabled?(:send_push_notification)).to be false
-    expect(base_service.option_disabled?(:create_users)).to be true
+    it { expect(subject.option_disabled?(:send_push_notification)).to be_falsey }
+    it { expect(subject.option_disabled?(:create_users)).to be_truthy }
   end
 
-  it 'must have generic error method do create new errors' do
-    expect(base_service.response_status_code).to be 400
-    expect(base_service.response_status).to be :bad_request
+  context 'have generic error method do create new errors' do
+    it do
+      expect { subject.send(:error, 422, 'unprocessable_entity') }.to change {
+        subject.response_status
+      }.from(:bad_request).to(:unprocessable_entity)
+    end
 
-    base_service.send(:error, 422, 'unprocessable_entity')
+    it do
+      expect { subject.send(:error, 422, 'unprocessable_entity') }.to change {
+        subject.response_status_code
+      }.from(400).to(422)
+    end
 
-    expect(base_service.response_status_code).to be 422
-    expect(base_service.response_status).to be :unprocessable_entity
-    expect(base_service.errors.last).to match /unprocessable_entity$/
+    it do
+      subject.send(:error, 422, 'unprocessable_entity')
+      expect(subject.errors.last).to match /unprocessable_entity$/
+    end
   end
 
-  it 'must return false when error bang method is called' do
-    error_response_with_bang = base_service.send(:not_found_error!, 'spec')
-    error_response = base_service.send(:not_found_error, 'spec')
-
-    expect(error_response_with_bang).to be false
-    expect(error_response).to be_a(String)
+  context 'return false when error bang method is called' do
+    it { expect(subject.send(:not_found_error!, 'spec')).to be_falsey }
+    it { expect(subject.send(:not_found_error, 'spec')).to be_a(String) }
   end
 
-  it 'must be invalid after any error' do
-    expect(base_service.valid?).to be true
-    base_service.send(:not_found_error!, 'spec')
-    expect(base_service.valid?).to be false
+  context 'be invalid after any error' do
+    it do
+      expect { subject.send(:not_found_error!, 'spec') }.to change {
+        subject.valid?
+      }.from(true).to(false)
+    end
   end
 
-  it 'must be success ONLY when success_response method is called' do
-    expect(base_service.success?).to be false
-    base_service.send(:success_response)
-    expect(base_service.success?).to be true
-    expect(base_service.fail?).to be false
+  context 'be success ONLY when success_response method is called' do
+    it do
+      expect { subject.send(:success_response) }.to change {
+        subject.success?
+      }.from(false).to(true)
+    end
+
+    context 'when call fail?' do
+      before { subject.send(:success_response) }
+      it { expect(subject.fail?).to be_falsey }
+    end
   end
 
-  it 'must not have success response if has any error' do
-    expect(base_service.success?).to be false
+  context 'must not have success response if has any error' do
+    it do
+      expect { subject.send(:success_response) }.to change {
+        subject.success?
+      }.from(false).to(true)
+    end
 
-    base_service.send(:success_response)
-    expect(base_service.success?).to be true
+    context 'when send some error' do
+      before do
+        subject.send(:success_response)
+        subject.send(:not_found_error, 'spec')
+        subject.send(:success_response)
+      end
 
-    base_service.send(:not_found_error, 'spec')
-
-    base_service.send(:success_response)
-    expect(base_service.success?).to be false
-    expect(base_service.fail?).to be true
+      it { expect(subject.success?).to be_falsey }
+      it { expect(subject.fail?).to be_truthy }
+    end
   end
 
-  it 'ust allow initial response status' do
-    base_service = NiftyServices::BaseService.new({}, 422)
-    expect(base_service.response_status_code).to be 422
-    expect(base_service.response_status).to be :unprocessable_entity
+  context 'allow initial response status' do
+    subject { NiftyServices::BaseService.new({}, 422) }
+    it { expect(subject.response_status_code).to eq(422) }
+    it { expect(subject.response_status).to eq(:unprocessable_entity) }
   end
 
-  # it 'must translate error message' do
-  #   current_locale = I18n.locale
+  xit 'must translate error message' do
+    current_locale = I18n.locale
 
-  #   error = base_service.send(:not_authorized_error, 'teste_spec')
+    error = subject.send(:not_authorized_error, 'teste_spec')
 
-  #   expect(error).not_to be == 'Not authorized'
-  #   expect(error).to match(/translation missing/)
+    expect(error).not_to be == 'Not authorized'
+    expect(error).to match(/translation missing/)
 
-  #   I18n.backend.store_translations current_locale, :nifty_services => { :errors => { 'teste_spec' => 'Not authorized' } }
+    I18n.backend.store_translations current_locale, :nifty_services => { :errors => { 'teste_spec' => 'Not authorized' } }
 
-  #   error = base_service.send(:not_authorized_error, 'teste_spec')
+    error = subject.send(:not_authorized_error, 'teste_spec')
 
-  #   expect(error).to be == 'Not authorized'
-  # end
+    expect(error).to be == 'Not authorized'
+  end
 
-  # it 'must handle when ActiveModel::Errors is provided to error method' do
-  #   errors = ActiveModel::Errors.new(:base_service)
-  #   errors.add('test', 'not valid')
+  xit 'must handle when ActiveModel::Errors is provided to error method' do
+    errors = ActiveModel::Errors.new(:subject)
+    errors.add('test', 'not valid')
 
-  #   error = base_service.send(:bad_request_error, errors)
+    error = subject.send(:bad_request_error, errors)
 
-  #   expect(error).to be_a(Hash)
-  #   expect(base_service.errors.last).to be == { test: [ 'not valid' ] }
+    expect(error).to be_a(Hash)
+    expect(subject.errors.last).to be == { test: [ 'not valid' ] }
 
-  #   errors.add('test', 'not valid again')
+    errors.add('test', 'not valid again')
 
-  #   expect(base_service.errors.last).to be == { test: [ 'not valid', 'not valid again' ] }
-  # end
+    expect(subject.errors.last).to be == { test: [ 'not valid', 'not valid again' ] }
+  end
 
   it 'must handle when array of hash is provided to error method' do
     errors = [
@@ -205,26 +244,24 @@ RSpec.describe NiftyServices::BaseService, type: :service do
       }
     ]
 
-    error = base_service.send(:bad_request_error, errors)
+    error = subject.send(:bad_request_error, errors)
     expect(error).to be_a(Array)
   end
 
-  it 'must have method to validate objects classes and presence' do
-    expect(base_service.send(:valid_object?, { } , Hash)).to be false
-    expect(base_service.send(:valid_object?, { key: :value } , Hash)).to be true
+  context 'have method to validate objects classes and presence' do
+    it { expect(subject.send(:valid_object?, { } , Hash)).to be_falsey }
+    it { expect(subject.send(:valid_object?, { key: :value } , Hash)).to be_truthy }
 
-    expect(base_service.send(:valid_object?, [] , Hash)).to be false
-    expect(base_service.send(:valid_object?, { key: :value } , Array)).to be false
+    it { expect(subject.send(:valid_object?, [] , Hash)).to be_falsey }
+    it { expect(subject.send(:valid_object?, { key: :value } , Array)).to be_falsey }
   end
 
-  it 'must clear invalid hash keys' do
-    whitelist = [:name, :age]
+  context 'clear invalid hash keys' do
+    let(:whitelist) { [:name, :age] }
+    let(:hash) { { name: 'Tom Rowlands' , email: 'tom@thechemicalbrothers.com', age: 44 } }
+    let(:filtered_hash) { subject.send(:filter_hash, hash, whitelist) }
 
-    hash = { name: 'Tom Rowlands' , email: 'tom@thechemicalbrothers.com', age: 44 }
-
-    filtered_hash = base_service.send(:filter_hash, hash, whitelist)
-
-    expect(filtered_hash.keys).to be == whitelist
-    expect(filtered_hash[:email]).to be_nil
+    it { expect(filtered_hash.keys).to match_array(whitelist) }
+    it { expect(filtered_hash[:email]).to be_nil }
   end
 end

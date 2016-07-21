@@ -1,4 +1,5 @@
 require 'nifty_services/version'
+require 'nifty_services/support/hash'
 require 'active_support/core_ext/string/inflections'
 
 module NiftyServices
@@ -13,7 +14,6 @@ module NiftyServices
   autoload :Error,              'nifty_services/errors'
   autoload :Errors,             'nifty_services/errors'
   autoload :Util,               'nifty_services/util'
-  autoload :Hash,               'nifty_services/support/hash'
 
   module Extensions
     autoload :CallbacksInterface, 'nifty_services/extensions/callbacks_interface'

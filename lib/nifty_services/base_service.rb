@@ -26,7 +26,7 @@ module NiftyServices
     end
 
     def initialize(options = {}, initial_response_status = 400)
-      @options = default_options.to_options!.merge(options).to_options!
+      @options = default_options.merge(options).symbolize_keys
       @errors = []
       @logger = @options[:logger] || default_logger
       @executed = false
@@ -191,8 +191,8 @@ module NiftyServices
       record.is_a?(expected_class)
     end
 
-    def filter_hash(hash, whitelist_keys = [])
-      (hash || {}).symbolize_keys.slice(*whitelist_keys.map(&:to_sym))
+    def filter_hash(hash = {}, whitelist_keys = [])
+      hash.symbolize_keys.slice(*whitelist_keys.map(&:to_sym))
     end
 
     def changes(old, current, attributes = {})

@@ -1,4 +1,5 @@
 require File.expand_path('extensions/callbacks', File.dirname(__FILE__))
+require 'i18n'
 
 module NiftyServices
   class BaseService
@@ -225,7 +226,7 @@ module NiftyServices
       elsif message_key.is_a?(Array) && message_key.first.is_a?(Hash)
         message = message_key
       else
-        message = I18n.t("#{i18n_errors_namespace}.#{message_key}", options)
+        message = translate("#{i18n_errors_namespace}.#{message_key}", options)
       end
 
       message
@@ -238,6 +239,14 @@ module NiftyServices
     protected
     def not_implemented_exception(method_name)
       raise NotImplementedError, "#{method_name} must be implemented in subclass"
+    end
+
+    def translate(key, options = {})
+      begin
+        I18n.t(key, options)
+      rescue => error
+        "Can't fecth key #{key} - #{error.message}"
+      end
     end
   end
 end

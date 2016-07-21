@@ -28,7 +28,7 @@ module NiftyServices
     def initialize(options = {}, initial_response_status = 400)
       @options = default_options.to_options!.merge(options).to_options!
       @errors = []
-      @logger = options[:logger] || default_logger
+      @logger = @options[:logger] || default_logger
       @executed = false
 
       with_before_and_after_callbacks(:initialize) do

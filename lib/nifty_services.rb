@@ -1,5 +1,5 @@
 require 'nifty_services/version'
-require 'active_support/core_ext/hash/keys'
+require 'nifty_services/support/hash'
 require 'active_support/core_ext/string/inflections'
 
 module NiftyServices

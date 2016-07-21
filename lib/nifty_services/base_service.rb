@@ -41,7 +41,7 @@ module NiftyServices
     end
 
     def valid?
-      return @errors.blank?
+      return @errors.empty?
     end
 
     def success?
@@ -59,7 +59,7 @@ module NiftyServices
     def valid_user?
       user_class = NiftyServices.config.user_class
 
-      raise 'Invalid User class. Use NitfyService.config.user_class = ClassName' if user_class.blank?
+      raise 'Invalid User class. Use NitfyService.config.user_class = ClassName' if user_class.nil?
 
       valid_object?(@user, user_class)
     end
@@ -188,7 +188,7 @@ module NiftyServices
     end
 
     def valid_object?(record, expected_class)
-      record.present? && record.is_a?(expected_class)
+      record.is_a?(expected_class)
     end
 
     def filter_hash(hash, whitelist_keys = [])
@@ -198,7 +198,7 @@ module NiftyServices
     def changes(old, current, attributes = {})
       changes = []
 
-      return changes if old.blank? || current.blank?
+      return changes if old.nil? || current.nil?
 
       old_attributes = old.attributes.slice(*attributes.map(&:to_s))
       new_attributes = current.attributes.slice(*attributes.map(&:to_s))

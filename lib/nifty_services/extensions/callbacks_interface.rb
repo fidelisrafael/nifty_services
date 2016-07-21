@@ -156,7 +156,7 @@ module NiftyServices
       end
 
       def callback_fired_in?(callback_list, callback_name)
-        return callback_list[callback_name.to_sym].present?
+        return callback_list.key?(callback_name.to_sym)
       end
 
       def normalized_callback_name(callback_name, prefix = '_callback')

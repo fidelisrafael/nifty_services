@@ -27,7 +27,7 @@ module NiftyServices
       end
 
       def add_response_error_method(reason, status_code)
-        response_errors_list[reason.to_sym] = status_code.to_i
+        ERROR_RESPONSE_STATUS[reason.to_sym] = status_code.to_i
       end
     end
 
@@ -38,9 +38,9 @@ module NiftyServices
     def initialize(options = {})
       @options = options
       @service_concerns_namespace = default_service_concerns_namespace
-      @user_class = options[:user_class] || default_user_class
+      @user_class = @options[:user_class] || default_user_class
       @i18n_namespace = @options[:i18n_namespace] || default_i18n_namespace
-      @logger = options[:logger] || default_logger
+      @logger = @options[:logger] || default_logger
     end
 
     def default_i18n_namespace

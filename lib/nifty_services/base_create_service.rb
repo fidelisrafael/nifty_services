@@ -42,7 +42,7 @@ module NiftyServices
     end
 
     def after_error_response(errors)
-      unprocessable_entity_error(errors) if errors.present?
+      unprocessable_entity_error(errors) unless errors.empty?
     end
 
     def after_execute_success_response
@@ -50,7 +50,7 @@ module NiftyServices
     end
 
     def build_record
-      if record_type.present?
+      unless record_type
         return build_from_record_type(record_allowed_attributes)
       end
 

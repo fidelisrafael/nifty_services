@@ -64,21 +64,6 @@ module NiftyServices
     alias :record_safe_attributes :record_allowed_attributes
 
     private
-    def array_values_from_hash(options, key, root = nil)
-      options = options.symbolize_keys
-
-      if root.present?
-        options = (options[root.to_sym] || {}).symbolize_keys
-      end
-
-      return [] unless options.key?(key.to_sym)
-
-      values = options[key.to_sym]
-
-      return values if values.is_a?(Array)
-
-      array_values_from_string(values)
-    end
 
     def invalid_user_error_key
       %s(users.not_found)
@@ -87,8 +72,6 @@ module NiftyServices
     def validate_user?
       true
     end
-
-    alias :array_values_from_params :array_values_from_hash
 
     def array_values_from_string(string)
       string.to_s.split(/\,/).map(&:squish)

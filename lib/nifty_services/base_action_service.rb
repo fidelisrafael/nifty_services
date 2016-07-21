@@ -17,7 +17,7 @@ module NiftyServices
             success_response
           else
             errors = action_errors
-            bad_request_error(errors) if errors.present?
+            bad_request_error(errors) unless errors.empty?
           end
         end
       end

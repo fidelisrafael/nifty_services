@@ -148,12 +148,8 @@ module NiftyServices
 
       response_list = error_list.merge(success_list)
 
-      selected_status = response_list.select do |status_key, status_code|
-        if select_method == :key
-          status_key == status
-        else
-          status_code == status
-        end
+      response_list.select do |status_key, status_code|
+        status == (select_method == :key ? status_key : status_code)
       end
     end
 

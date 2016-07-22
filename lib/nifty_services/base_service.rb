@@ -26,9 +26,10 @@ module NiftyServices
     end
 
     def initialize(options = {}, initial_response_status = 400)
-      @options = default_options.merge(options).symbolize_keys
+      @options = with_default_options(options)
       @errors = []
       @logger = @options[:logger] || default_logger
+
       @executed = false
 
       with_before_and_after_callbacks(:initialize) do
@@ -94,6 +95,10 @@ module NiftyServices
     alias :runned? :executed?
 
     private
+    def with_default_options(options)
+      default_options.merge(options).symbolize_keys
+    end
+
     def default_options
       {}
     end

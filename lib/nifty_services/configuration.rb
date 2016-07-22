@@ -1,5 +1,3 @@
-require 'logger'
-
 module NiftyServices
   class Configuration
 
@@ -33,21 +31,26 @@ module NiftyServices
 
     attr_reader :options
 
-    attr_accessor :logger, :i18n_namespace, :user_class, :service_concerns_namespace
+    attr_accessor :logger, :i18n_namespace,
+                  :user_class, :service_concerns_namespace
 
     def initialize(options = {})
       @options = options
       @service_concerns_namespace = default_service_concerns_namespace
-      @user_class = @options[:user_class] || default_user_class
-      @i18n_namespace = @options[:i18n_namespace] || default_i18n_namespace
-      @logger = @options[:logger] || default_logger
+      @i18n_namespace = fetch(:i18n_namespace, default_i18n_namespace)
+      @user_class = fetch(:user_class, default_user_class)
+      @logger = fetch(:logger, default_logger)
+    end
+
+    private
+    def fetch(option_key, default = nil)
+      @options[option_key] || default
     end
 
     def default_i18n_namespace
        DEFAULT_I18N_NAMESPACE
     end
 
-    private
     def default_service_concerns_namespace
       DEFAULT_SERVICE_CONCERN_NAMESPACE
     end

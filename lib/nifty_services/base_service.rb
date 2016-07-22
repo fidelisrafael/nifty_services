@@ -1,7 +1,7 @@
+require File.expand_path('extensions/callbacks', File.dirname(__FILE__))
+
 module NiftyServices
   class BaseService
-
-    include Extensions::CallbacksInterface
 
     attr_reader :response_status, :response_status_code
     attr_reader :options, :errors, :logger

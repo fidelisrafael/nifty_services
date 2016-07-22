@@ -1,5 +1,8 @@
+require 'logger'
+
 require 'nifty_services/version'
 require 'nifty_services/support/hash'
+
 require 'active_support/core_ext/string/inflections'
 
 module NiftyServices
@@ -20,7 +23,7 @@ module NiftyServices
   end
 
   class << self
-    def configuration(&block)
+    def configuration
       @configuration ||= Configuration.new
 
       yield(@configuration) if block_given?

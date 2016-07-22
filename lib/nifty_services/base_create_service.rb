@@ -29,7 +29,8 @@ module NiftyServices
         @record.save
       rescue => e
         on_save_record_error(e)
-        return false
+      ensure
+        return @record.valid?
       end
     end
 
@@ -57,19 +58,19 @@ module NiftyServices
       return not_implemented_exception(__method__)
     end
 
+    def build_record_scope
+      nil
+    end
+
     def build_from_record_type(params)
       if !build_record_scope.nil? && build_record_scope.respond_to?(:build)
-        return build_record_scope.send(:build, params)
+        return build_record_scope.build(params)
       end
 
-      record_type.send(:new, params)
+      record_type.new(params)
     end
 
     def can_execute?
-      if validate_ip_on_create? && !can_create_with_ip?
-        return forbidden_error!(%s(users.ip_temporarily_blocked))
-      end
-
       if validate_user? && !valid_user?
         return not_found_error!(invalid_user_error_key)
       end
@@ -91,19 +92,6 @@ module NiftyServices
 
     def can_execute_action?
       return can_create_record?
-    end
-
-    def can_create_with_ip?
-      true
-    end
-
-    def validate_ip_on_create?
-      # TODO: Use NiftyService.config.validate_ip_on_create?
-      false
-    end
-
-    def build_record_scope
-      nil
     end
 
     def user_cant_create_error_key

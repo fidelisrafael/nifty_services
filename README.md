@@ -793,7 +793,7 @@ my_app:
 ## Callbacks
 
 Here the most common callbacks list you can use to hook actions in run-time:
-(**Hint**: See all existent callbacks definitions in [`extensions/callbacks.rb`](lib/nifty_services/extensions/callbacks.rb#78-L22) file)
+(**Hint**: See all existent callbacks definitions in [`extensions/callbacks.rb`](lib/nifty_services/extensions/callbacks.rb#L7-L22) file)
 
 ```
   - before_initialize

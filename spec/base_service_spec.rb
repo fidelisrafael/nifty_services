@@ -153,7 +153,7 @@ RSpec.describe NiftyServices::BaseService, type: :service do
 
     it do
       subject.send(:error, 422, 'unprocessable_entity')
-      expect(subject.errors.last).to match /unprocessable_entity$/
+      expect(subject.errors.last).to match /unprocessable_entity/
     end
   end
 

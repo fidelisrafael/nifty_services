@@ -24,5 +24,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", '~> 10.5.0'
   spec.add_development_dependency "rspec", '~> 3.5.0'
   spec.add_development_dependency "pry", '~> 0'
-  spec.add_runtime_dependency 'activesupport', '>= 4.2.2'
+  spec.add_development_dependency "i18n", '~> 0.7.0'
 end

@@ -109,21 +109,15 @@ module NiftyServices
     end
 
     def execute_action(&block)
-      begin
-        return nil if executed?
+      return nil if executed?
 
-        with_before_and_after_callbacks(:execute) do
-          if can_execute?
-            yield(block) if block_given?
-          end
+      with_before_and_after_callbacks(:execute) do
+        if can_execute?
+          yield(block) if block_given?
         end
-
-        @executed = true
-      rescue Exception => e
-        add_error(e)
       end
 
-      self # allow chaining
+      @executed = true
     end
 
     def success_response(status = :ok)

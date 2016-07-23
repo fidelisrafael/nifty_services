@@ -51,7 +51,7 @@ module NiftyServices
     end
 
     def build_record
-      unless record_type
+      unless record_type.nil?
         return build_from_record_type(record_allowed_attributes)
       end
 

@@ -1260,7 +1260,6 @@ Currently NiftyServices don't have CLI(command line interface) generators, but i
 
 ## :calendar: Roadmap <a name="roadmap"></a>
 
-- :white_medium_small_square: Remove ActiveSupport dependency
 - :white_medium_small_square: Create CLI Generators
 - :white_medium_small_square: Beter documentation for `BaseActionService`
 - :white_medium_small_square: Write Sample Applications

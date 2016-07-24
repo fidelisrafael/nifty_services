@@ -273,9 +273,7 @@ RSpec.describe NiftyServices::BaseService, type: :service do
       end
 
       it do
-        expect { subject.send(:valid_user?) }.to raise_error(
-          'Invalid User class. Use NitfyService.config.user_class = ClassName'
-        )
+        expect { subject.send(:valid_user?) }.to raise_error(NiftyServices::Errors::InvalidUser)
       end
     end
 

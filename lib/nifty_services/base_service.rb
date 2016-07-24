@@ -71,7 +71,7 @@ module NiftyServices
     end
 
     def option_enabled?(key)
-      option_exists?(key) && @options[key.to_sym] == true
+      option_exists?(key) && [true, 'true'].member?(@options[key.to_sym])
     end
 
     def option_disabled?(key)

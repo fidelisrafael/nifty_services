@@ -1,5 +1,5 @@
-unless String.method_defined?(:underscore)
-  class String
+class String
+  unless method_defined?(:underscore)
    def underscore
       return self unless self =~ /[A-Z-]|::/
       word = self.to_s.gsub('::'.freeze, '/'.freeze)

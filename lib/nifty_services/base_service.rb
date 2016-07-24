@@ -61,7 +61,7 @@ module NiftyServices
     def valid_user?
       user_class = NiftyServices.config.user_class
 
-      raise 'Invalid User class. Use NitfyService.config.user_class = ClassName' if user_class.nil?
+      raise 'Invalid User class. Use NiftyServices.config.user_class = ClassName' if user_class.nil?
 
       valid_object?(@user, user_class)
     end
@@ -184,7 +184,7 @@ module NiftyServices
     end
 
     def valid_object?(record, expected_class)
-      record.is_a?(expected_class)
+      record.class.to_s == expected_class.to_s
     end
 
     def filter_hash(hash = {}, whitelist_keys = [])

@@ -61,7 +61,7 @@ module NiftyServices
     def valid_user?
       user_class = NiftyServices.config.user_class
 
-      raise 'Invalid User class. Use NiftyServices.config.user_class = ClassName' if user_class.nil?
+      raise Errors::InvalidUser if user_class.nil?
 
       valid_object?(@user, user_class)
     end

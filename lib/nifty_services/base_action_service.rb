@@ -13,19 +13,14 @@ module NiftyServices
           # here user can
           execute_service_action
 
-          if valid?
-            success_response
-          else
-            errors = action_errors
-            bad_request_error(errors) unless errors.empty?
-          end
+          success_response if valid?
         end
       end
     end
 
     private
     def action_errors
-      []
+      @errors
     end
 
     def can_execute?

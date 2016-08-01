@@ -220,7 +220,9 @@ module NiftyServices
       elsif message_key.is_a?(Array) && message_key.first.is_a?(Hash)
         message = message_key
       else
-        message = translate("#{i18n_errors_namespace}.#{message_key}", options)
+        message = options[:translate].nil? || options[:translate] == true ?
+                    translate("#{i18n_errors_namespace}.#{message_key}", options) :
+                    message_key
       end
 
       message

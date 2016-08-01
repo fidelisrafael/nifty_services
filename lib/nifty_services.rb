@@ -17,10 +17,6 @@ module NiftyServices
   autoload :Errors,             'nifty_services/errors'
   autoload :Util,               'nifty_services/util'
 
-  module Extensions
-    autoload :CallbacksInterface, 'nifty_services/extensions/callbacks_interface'
-  end
-
   class << self
     def configuration
       @configuration ||= Configuration.new

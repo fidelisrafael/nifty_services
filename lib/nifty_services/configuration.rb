@@ -10,6 +10,10 @@ module NiftyServices
       :forbidden             => 403,
       :not_found             => 404,
       :unprocessable_entity  => 422,
+      # internal_server_error_error!
+      :internal_server_error => 500,
+      # keeping compatibility
+      # internal_server_error!
       :internal_server       => 500,
       :not_implemented       => 501
     }

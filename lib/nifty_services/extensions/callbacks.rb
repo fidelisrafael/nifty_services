@@ -4,6 +4,12 @@ module NiftyServices
     @@registered_callbacks = Hash.new {|k,v| k[v] = Hash.new }
 
     CALLBACKS = [
+      :before_execute_service_action,
+      :after_execute_service_action,
+      :before_destroy_record,
+      :after_destroy_record,
+      :before_update_record,
+      :after_update_record,
       :before_build_record,
       :after_build_record,
       :before_initialize,

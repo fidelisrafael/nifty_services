@@ -5,7 +5,9 @@ module NiftyServices
       execute_action do
         with_before_and_after_callbacks(:delete) do
           if can_execute_action?
-            if destroy_record
+            destroyed_record = with_before_and_after_callbacks(:destroy_record) { destroy_record }
+
+            if destroyed_record
               success_response
             else
               bad_request_error(@record.errors)
@@ -17,7 +19,8 @@ module NiftyServices
 
     private
     def destroy_record
-      @record.try(:destroy) || @record.try(:delete)
+      # initialize @temp_record to be used in after_destroy_record callback
+      @temp_record = @record.destroy
     end
 
     def can_execute?

@@ -11,7 +11,9 @@ module NiftyServices
       execute_action do
         with_before_and_after_callbacks(:action) do
           # here user can
-          execute_service_action
+          with_before_and_after_callbacks(:execute_service_action) do
+            execute_service_action
+          end
 
           success_response if valid?
         end

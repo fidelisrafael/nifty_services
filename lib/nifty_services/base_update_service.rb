@@ -7,7 +7,7 @@ module NiftyServices
           if can_execute_action?
             duplicate_records_before_update
 
-            @record = update_record
+            @record = with_before_and_after_callbacks(:update_record) { update_record }
 
             if success_updated?
               success_response
@@ -40,7 +40,8 @@ module NiftyServices
     end
 
     def update_record
-      @record.class.send(:update, @record.id, record_allowed_attributes)
+      # initialize @temp_record to be used in after_update_record callback
+      @temp_record = @record.class.send(:update, @record.id, record_allowed_attributes)
     end
 
     def can_execute?

@@ -665,7 +665,7 @@ class PostDeleteService < NiftyServices::BaseDeleteService
   # create custom delete, but remembers that this method
   # must return a boolean value
   def destroy_record
-    @record.try(:destroy) || @record.try(:delete)
+    @record.destroy
   end
 
   # by default, internally @record must respond to
@@ -1166,7 +1166,7 @@ class SomeDeleteService < NiftyServices::BaseDeleteService
   # to do custom delete (MOST OF TIME YOU DONT NEED TO DO THIS)
   # only change this if you know what you are really doing
   def destroy_record
-    @record.try(:destroy) || @record.try(:delete)
+    @record.destroy
   end
 
 end

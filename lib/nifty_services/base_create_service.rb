@@ -10,7 +10,7 @@ module NiftyServices
       execute_action do
         with_before_and_after_callbacks(:create) do
           if can_execute_action?
-            @record = build_record
+            @record = with_before_and_after_callbacks(:build_record) { build_record }
 
             if save_record
               after_execute_success_response
@@ -52,7 +52,8 @@ module NiftyServices
 
     def build_record
       unless record_type.nil?
-        return build_from_record_type(record_allowed_attributes)
+        # initialize @temp_record to be used in after_build_record callback
+        return @temp_record = build_from_record_type(record_allowed_attributes)
       end
 
       return not_implemented_exception(__method__)

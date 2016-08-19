@@ -10,7 +10,7 @@ module NiftyServices
             if destroyed_record
               success_response
             else
-              bad_request_error(@record.errors)
+              unprocessable_entity_error!(@record.errors)
             end
           end
         end
@@ -37,7 +37,7 @@ module NiftyServices
 
     def can_delete_record?
       unless user_can_delete_record?
-        return (valid? ? forbidden_error!(user_can_delete_error_key) : false)
+        return (valid? ? forbidden_error!(user_cant_delete_error_key) : false)
       end
 
       return true

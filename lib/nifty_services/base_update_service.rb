@@ -13,7 +13,7 @@ module NiftyServices
               success_response
             else
               errors = update_errors
-              bad_request_error(errors) unless errors.empty?
+              unprocessable_entity_error!(errors) unless errors.empty?
             end
           end
         end

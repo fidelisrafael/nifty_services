@@ -474,7 +474,7 @@ service = PostCreateService.new(User.first, title: 'Teste', content: 'Post examp
 service.execute
 
 service.success? # true
-service.response_status_code # 200
+service.response_status_code # 201
 service.response_status # :created
 ```
 

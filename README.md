@@ -983,9 +983,13 @@ Well done sir! Did you read the comments in `generic_response_for_service`? Read
 Well, the integration here don't variate too much from Rails, just follow the steps:
 
 **1 -** Decide where you'll put your services
+
 **2 -** Code that dam amazing services!
+
 **3 -** Instantiate the service in your framework entry point
+
 **4 -** Create helpers to handle service response
+
 **5 -** Be happy and go party!
 
 ---

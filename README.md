@@ -1,4 +1,5 @@
 # NiftyServices
+
 [![Build Status](https://travis-ci.org/fidelisrafael/nifty_services.svg)](https://travis-ci.org/fidelisrafael/nifty_services)
 ## Introduction
 

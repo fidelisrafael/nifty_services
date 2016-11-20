@@ -19,6 +19,8 @@ As you can see, this README needs some time to be full read, but is very difficu
 But remember one thing: This is a **tecnical documentation**, not a blog post, I'm pretty sure you can take about 30 minutes + some cups of :coffee: to better understand all NiftyServices can
 do for you and your project. Good reading, and if you have some question, [please let me know](issues/new).
 
+Update: Now the documentation was separated in Wiki format. So it's a lot easier for reading.
+
 ---
 
 ## Conventions
@@ -52,50 +54,50 @@ Now you know the basic concepts and philosophy of `NiftyServices`, lets start wo
 
 * [Dafuck is this gem](#introduction)
 * [Conventions](#conventions)
-  * [Single Responsability](#conventions-single-responsibility)
-  * [Method execution](#hammer-common-and-single-run-execution-method)
-  * [Rich Service Objects](#package-rich-service-objects)
-  * [Security & Access Level Control](#lock-security---access-control-level)
+    * [Single Responsability](#conventions-single-responsibility)
+    * [Method execution](#hammer-common-and-single-run-execution-method)
+    * [Rich Service Objects](#package-rich-service-objects)
+    * [Security & Access Level Control](#lock-security---access-control-level)
 * [Installation](#installation)
 * [Usage](./docs/usage.md#usage)
-  * [Basic Service Markup](./docs/usage.md#basic-service-markup)
-  * [How a Service must be created](./docs/usage.md#wrapping-things-up)
-  * [Services API](./docs/usage.md#services-public-api)
+    * [Basic Service Markup](./docs/usage.md#basic-service-markup)
+    * [How a Service must be created](./docs/usage.md#wrapping-things-up)
+    * [Services API](./docs/usage.md#services-public-api)
     * [Full Public Service API Methods List](./docs/usage.md#full-public-api-methods-list)
-  * [Handling Success & Error Responses](./docs/usage.md#success--error-responses)
-    * [Success response](./docs/usage.md#white_check_mark-handling-success-zap)
-    * [Error response](./docs/usage.md#red_circle-handling-error-boom)
+    * [Handling Success & Error Responses](./docs/usage.md#success--error-responses)
+      * [Success response](./docs/usage.md#white_check_mark-handling-success-zap)
+      * [Error response](./docs/usage.md#red_circle-handling-error-boom)
       * [Custom error response methods](./docs/usage.md#custom-error-response-methods)
-  * [CRUD Services](#crud-services)
-    * [**Create** - BaseCreateService](#white_check_mark-crud-create)
-      * [I18n Setup](#earth_americas-i18n-setup)
-      * [Error - Invalid User](#alien-invalid-user)
-      * [Error - Not authorized](#no_entry_sign-not-authorized-to-create)
-      * [Error - Invalid record](#boom-record-is-invalid)
-    * [**Update** - BaseUpdateService](#white_check_mark-crud-update)
-      * [I18n Setup](#earth_asia-i18n-setup)
-      * [Error - Invalid User](#update-resource-user-invalid)
-      * [Error - Resource don't belongs to user](#update-resource-dont-belongs-to-user)
-      * [Error - Resource dont exists](#update-resource-dont-exists)
-    * [**Delete** - BaseDeleteService](#white_check_mark-crud-delete)
-        * [I18n Setup](#earth_africa-i18n-setup)
-        * [Error - Invalid User](#delete-resource-user-invalid)
-        * [Error - Resource don't belongs to user](#delete-resource-dont-belongs-to-user)
-        * [Error - Resource dont exists](#delete-resource-dont-exists)
-   * [I18n Setup](#us-fr-jp-i18n-support-uk-es-de)
-   * [Callbacks](#callbacks)
-      * [Using custom callbacks](#creating-custom-callbacks)
-   * [Configuration](#construction-configuration-construction)
-   * [Web Frameworks integration](#web-frameworks-integrations)
-      * [Ruby on Rails](#frameworks-rails)
-      * [Grape/Sinatra/Rack](#frameworks-rack)
-      * [Sample Integrations](#integration-examples)
-   * [Basic Services class Markups](#pray-basic-service-markups-raised_hands)
-      * [BaseCreateService Basic Markup](#basecreateservice-basic-markup)
-      * [BaseUpdateService Basic Markup](#baseupdateservice-basic-markup)
-      * [BaseDeleteService Basic Markup](#basedeleteservice-basic-markup)
-      * [BaseActionService Basic Markup](#baseactionservice-basic-markup)
-   * [CLI Generators](#cli-generators)
+  * [CRUD Services](./docs/crud_services.md#crud-services)
+      * [**Create** - BaseCreateService](./docs/crud_services.md#white_check_mark-crud-create)
+        * [I18n Setup](./docs/crud_services.md#earth_americas-i18n-setup)
+        * [Error - Invalid User](./docs/crud_services.md#alien-invalid-user)
+        * [Error - Not authorized](./docs/crud_services.md#no_entry_sign-not-authorized-to-create)
+        * [Error - Invalid record](./docs/crud_services.md#boom-record-is-invalid)
+    * [**Update** - BaseUpdateService](./docs/crud_services.md#white_check_mark-crud-update)
+        * [I18n Setup](./docs/crud_services.md#earth_asia-i18n-setup)
+        * [Error - Invalid User](./docs/crud_services.md#update-resource-user-invalid)
+        * [Error - Resource don't belongs to user](./docs/crud_services.md#update-resource-dont-belongs-to-user)
+        * [Error - Resource dont exists](./docs/crud_services.md#update-resource-dont-exists)
+    * [**Delete** - BaseDeleteService](./docs/crud_services.md#white_check_mark-crud-delete)
+        * [I18n Setup](./docs/crud_services.md#earth_africa-i18n-setup)
+        * [Error - Invalid User](./docs/crud_services.md#delete-resource-user-invalid)
+        * [Error - Resource don't belongs to user](./docs/crud_services.md#delete-resource-dont-belongs-to-user)
+        * [Error - Resource dont exists](./docs/crud_services.md#delete-resource-dont-exists)
+   * [I18n Setup](./docs/i18n.md)
+   * [Callbacks](./docs/callbacks.md)
+      * [Using custom callbacks](./docs/callbacks.md#creating-custom-callbacks)
+   * [Configuration](./docs/configuration.md)
+   * [Web Frameworks integration](./docs/webframeworks_integration.md)
+      * [Ruby on Rails](./docs/webframeworks_integration.md#frameworks-rails)
+      * [Grape/Sinatra/Rack](./docs/webframeworks_integration.md#frameworks-rack)
+      * [Sample Integrations](./docs/webframeworks_integration.md#integration-examples)
+   * [Basic Services class Markups](./docs/services_markup.md)
+      * [BaseCreateService Basic Markup](./docs/services_markup.md#basecreateservice-basic-markup)
+      * [BaseUpdateService Basic Markup](./docs/services_markup.md#baseupdateservice-basic-markup)
+      * [BaseDeleteService Basic Markup](./docs/services_markup.md#basedeleteservice-basic-markup)
+      * [BaseActionService Basic Markup](./docs/services_markup.md#baseactionservice-basic-markup)
+   * [CLI Generators](./docs/cli.md)
    * [Roadmap](#roadmap)
    * [Development](#computer-development)
    * [Contributing](#thumbsup-contributing)
@@ -120,6 +122,19 @@ Or install it yourself as:
     $ gem install nifty_services
 
 ---
+
+## :calendar: Roadmap <a name="roadmap"></a>
+
+- :white_medium_small_square: Create CLI Generators
+- :white_medium_small_square: Beter documentation for `BaseActionService`
+- :white_medium_small_square: Write Sample Applications
+- :white_medium_small_square: Write better tests for all `Crud Services`
+- :white_medium_small_square: Write better tests for `BaseActionServices`
+- :white_medium_small_square: Write tests for Configuration
+- :white_medium_small_square: Write tests for Callbacks
+
+---
+
 
 ## :computer: Development
 

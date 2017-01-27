@@ -38,23 +38,21 @@ class SomeCreateService < NiftyServices::BaseCreateService
     :safe_attribute_2,
   ]
 
+  # [Required]
+  # You must setup whitelist attributes or define the method `record_attributes_whitelist` method
+  whitelist_attributes WHITELIST_ATTRIBUTES
+
   # You can freely override initialize method to receive more arguments
   def initialize(record, user, options = {})
     @user = user
     super(record, options)
   end
 
-  # [Required]
-  # You must explicit return an array will all permited attributes
-  # If this method is not implemented a NotImplementedError exception will be raised
-  def record_attributes_whitelist
-    WHITELIST_ATTRIBUTES
-  end
-
   private
   # [Optional]
   # this key is used for I18n translations, you don't need to override or implement
-  # NiftyService will try to inflect this using `record_type.to_s.pluralize.underscore`
+  # NiftyService will try to inflect this using `record_type.to_s.underscore + 's'`
+
   # So, if your record type is `Post`, `record_error_key` will be `posts`
   def record_error_key
     :posts
@@ -126,6 +124,10 @@ class SomeUpdateService < NiftyServices::BaseUpdateService
     :safe_attribute_2,
   ]
 
+  # [Required]
+  # You must setup whitelist attributes or define the method `record_attributes_whitelist` method
+  whitelist_attributes WHITELIST_ATTRIBUTES
+
   private
 
   # [Required]
@@ -138,13 +140,6 @@ class SomeUpdateService < NiftyServices::BaseUpdateService
     @options.fetch(:data, {})
   end
 
-  # [Required]
-  # You must explicit return an array will all permited attributes allowed to be updated
-  # If this method is not implemented a NotImplementedError exception will be raised
-  def record_attributes_whitelist
-    WHITELIST_ATTRIBUTES
-  end
-
   # [required]
   # This is a VERY IMPORTANT point of attention
   # always verify if @user has permissions to update the current @record object
@@ -153,7 +148,6 @@ class SomeUpdateService < NiftyServices::BaseUpdateService
     @record.user_id == @user.id
   end
 
-
   # [Optional]
   # This is the default implementation of update record, you may overwrite it
   # to to custom updates (MOST OF TIME YOU DONT NEED TO DO THIS)
@@ -161,7 +155,6 @@ class SomeUpdateService < NiftyServices::BaseUpdateService
   def update_record
     @record.class.send(:update, @record.id, record_allowed_attributes)
   end
-
 
   # [optional]
   # Any callback is optional, this is just a example

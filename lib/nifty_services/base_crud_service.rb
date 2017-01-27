@@ -13,6 +13,26 @@ module NiftyServices
 
         alias_method record_alias.to_sym, :record
       end
+
+      def whitelist_attributes(*attrs)
+        raise "Invalid whitelist attributes(#{attrs}) array" unless attrs.is_a?(Array)
+
+        attributes = *attrs.flatten.map(&:to_sym)
+
+        define_method :record_attributes_whitelist do
+          attributes
+        end
+
+        define_singleton_method :get_whitelist_attributes do
+          attributes
+        end
+
+        attributes
+      end
+
+      def get_whitelist_attributes
+        []
+      end
     end
 
     def initialize(record, options = {})
@@ -49,7 +69,8 @@ module NiftyServices
 
     private
     def record_error_key
-      record_type.to_s.pluralize.underscore
+      # very simple and poor way to pluralize string
+      record_type.to_s.underscore + "s"
     end
 
     def valid_record?

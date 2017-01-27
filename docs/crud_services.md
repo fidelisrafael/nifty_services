@@ -52,9 +52,8 @@ class PostCreateService < NiftyServices::BaseCreateService
 
   WHITELIST_ATTRIBUTES = [:title, :content]
 
-  def record_attributes_whitelist
-    WHITELIST_ATTRIBUTES
-  end
+  whitelist_attributes WHITELIST_ATTRIBUTES
+
 
   # use custom scope to create the record
   # scope returned below must respond_to :build method
@@ -63,7 +62,7 @@ class PostCreateService < NiftyServices::BaseCreateService
   end
 
   # this key is used for I18n translations, you don't need to override or implement
-  # NiftyService will try to inflect this using `record_type.to_s.pluralize.underscore`
+  # NiftyService will try to inflect this using `record_type.to_s.underscore + 's'`
   # So, if your record type is `Post`, `record_error_key` will be `posts`
   def record_error_key
     :posts
@@ -204,14 +203,12 @@ class PostUpdateService < NiftyServices::BaseUpdateService
 
   WHITELIST_ATTRIBUTES = [:title, :content]
 
+  whitelist_attributes WHITELIST_ATTRIBUTES
+
   # You can freely override initialize method to receive more arguments
   def initialize(record, user, options = {})
     @user = user
     super(record, options)
-  end
-
-  def record_allowed_attributes
-    WHITELIST_ATTRIBUTES
   end
 
   # This method is strict required by NiftyServices, each service must implement
@@ -370,7 +367,7 @@ class PostDeleteService < NiftyServices::BaseDeleteService
   def delete_record
     @record.delete
   end
-  
+
   # This method is strict required by NiftyServices, each service must implement
   def can_delete_record?
     # Checking user before trying to create a post for this same user
@@ -473,6 +470,10 @@ module PostCrudExtensions
   end
 
   def record_allowed_attributes
+    WHITELIST_ATTRIBUTES
+  end
+
+  def self.whitelist_attributes
     WHITELIST_ATTRIBUTES
   end
 

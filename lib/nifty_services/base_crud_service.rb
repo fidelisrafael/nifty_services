@@ -1,7 +1,4 @@
 module NiftyServices
-  module Concerns
-  end
-
   class BaseCrudService < BaseService
 
     attr_reader :record
@@ -16,23 +13,10 @@ module NiftyServices
 
         alias_method record_alias.to_sym, :record
       end
-
-      def include_concern(namespace, concern_type)
-        _module = "#{services_concern_namespace}::#{namespace.to_s.camelize}::#{concern_type.to_s.camelize}"
-
-        self.include(_module.constantize)
-      end
-
-      def services_concern_namespace
-        NiftyServices.config.service_concerns_namespace
-      end
-
-      alias_method :concern, :include_concern
     end
 
-    def initialize(record, user, options = {})
+    def initialize(record, options = {})
       @record = record
-      @user = user
 
       super(options)
     end
@@ -64,19 +48,6 @@ module NiftyServices
     alias :record_safe_attributes :record_allowed_attributes
 
     private
-
-    def invalid_user_error_key
-      %s(users.not_found)
-    end
-
-    def validate_user?
-      true
-    end
-
-    def array_values_from_string(string)
-      string.to_s.split(/\,/).map(&:squish)
-    end
-
     def record_error_key
       record_type.to_s.pluralize.underscore
     end

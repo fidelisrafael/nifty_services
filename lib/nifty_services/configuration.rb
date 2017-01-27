@@ -2,7 +2,6 @@ module NiftyServices
   class Configuration
 
     DEFAULT_I18N_NAMESPACE = "nifty_services"
-    DEFAULT_SERVICE_CONCERN_NAMESPACE = 'NitfyServices::Concerns'
 
     ERROR_RESPONSE_STATUS = {
       :bad_request           => 400,
@@ -36,13 +35,14 @@ module NiftyServices
     attr_reader :options
 
     attr_accessor :logger, :i18n_namespace,
-                  :user_class, :service_concerns_namespace
+                  :delete_record_method, :update_record_method, :save_record_method
 
     def initialize(options = {})
       @options = options
-      @service_concerns_namespace = default_service_concerns_namespace
       @i18n_namespace = fetch(:i18n_namespace, default_i18n_namespace)
-      @user_class = fetch(:user_class, default_user_class)
+      @delete_record_method = :delete
+      @update_record_method = :update
+      @save_record_method = :save
       @logger = fetch(:logger, default_logger)
     end
 
@@ -53,14 +53,6 @@ module NiftyServices
 
     def default_i18n_namespace
        DEFAULT_I18N_NAMESPACE
-    end
-
-    def default_service_concerns_namespace
-      DEFAULT_SERVICE_CONCERN_NAMESPACE
-    end
-
-    def default_user_class
-      nil
     end
 
     def default_logger

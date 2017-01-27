@@ -43,7 +43,7 @@ RSpec.describe NiftyServices::BaseService, type: :service do
       # puts 'All classes that inherit from NiftyServices::BaseCreateService will call this callback'
     end
 
-    service = NiftyServices::BaseCreateService.new(Object.new)
+    service = NiftyServices::BaseCreateService.new({})
     service.send(:success_response)
 
     expect(service.callback_fired?(:write_to_log)).to be_truthy
@@ -264,32 +264,5 @@ RSpec.describe NiftyServices::BaseService, type: :service do
 
     it { expect(filtered_hash.keys).to match_array(whitelist) }
     it { expect(filtered_hash[:email]).to be_nil }
-  end
-
-  describe '#valid_user?' do
-    context 'when user_class is nil' do
-      before do
-        NiftyServices.config.user_class = nil
-      end
-
-      it do
-        expect { subject.send(:valid_user?) }.to raise_error(NiftyServices::Errors::InvalidUser)
-      end
-    end
-
-    context 'when user_class is present' do
-      before do
-        NiftyServices.config.user_class = Dummy
-      end
-
-      context 'and object is invalid' do
-        before { subject.instance_variable_set("@user", Dummy.new)  }
-        it { expect(subject.send(:valid_user?)).to be_truthy }
-      end
-
-      context 'and object is invalid' do
-        it { expect(subject.send(:valid_user?)).to be_falsey }
-      end
-    end
   end
 end

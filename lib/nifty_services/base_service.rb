@@ -24,6 +24,12 @@ module NiftyServices
           error!(status_code, message_key, options)
         end
       end
+
+      def concern(concern_module)
+        self.include(concern_module)
+      end
+
+      alias_method :include_concern, :concern
     end
 
     def initialize(options = {}, initial_response_status = 400)
@@ -56,14 +62,6 @@ module NiftyServices
 
     def response_status
       @response_status ||= :bad_request
-    end
-
-    def valid_user?
-      user_class = NiftyServices.config.user_class
-
-      raise Errors::InvalidUser if user_class.nil?
-
-      valid_object?(@user, user_class)
     end
 
     def option_exists?(key)
@@ -214,15 +212,20 @@ module NiftyServices
       "#{i18n_namespace}.errors"
     end
 
-    def process_error_message_for_key(message_key, options)
-      if message_key.class.to_s == 'ActiveModel::Errors'
-        message = message_key.messages
-      elsif message_key.is_a?(Array) && message_key.first.is_a?(Hash)
-        message = message_key
-      else
+    def process_error_message_for_key(message_object, options)
+      if message_object.respond_to?(:messages)
+        message = message_object.messages
+      elsif message_object.respond_to?(:message)
+        message = message_object.message
+      elsif message_object.is_a?(Array) && message_object.first.is_a?(Hash)
+        message = message_object
+      elsif message_object.is_a?(String)
+        # if message_object is a string, use it as key to I18n or use pure string content
         message = options[:translate].nil? || options[:translate] == true ?
-                    translate("#{i18n_errors_namespace}.#{message_key}", options) :
-                    message_key
+                    translate("#{i18n_errors_namespace}.#{message_object}", options) :
+                    message_object
+      else
+        message = message_object
       end
 
       message
@@ -234,7 +237,8 @@ module NiftyServices
 
     protected
     def not_implemented_exception(method_name)
-      raise NotImplementedError, "#{method_name} must be implemented in subclass"
+      message = "##{method_name} method must be implemented in #{self.class} class"
+      raise NotImplementedError, message
     end
 
     def translate(key, options = {})

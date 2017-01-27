@@ -25,7 +25,7 @@ Next, configure:
 
 ```ruby
 NiftyServices.configure do |config|
- config.user_class = User
+  config.i18n_namespace = 'my_app'
 end
 ```
 **Note**:  See [Configurations](./configuration.md) section to see all available configs

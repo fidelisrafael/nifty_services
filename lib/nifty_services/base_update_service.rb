@@ -40,8 +40,16 @@ module NiftyServices
     end
 
     def update_record
+      update_method = NiftyServices.configuration.update_record_method
+
+      if update_method.respond_to?(:call)
+        update_method.call(@record, record_allowed_attributes)
+      else
+        @record.public_send(update_method, record_allowed_attributes)
+      end
+
       # initialize @temp_record to be used in after_update_record callback
-      @temp_record = @record.class.send(:update, @record.id, record_allowed_attributes)
+      @temp_record = @record
     end
 
     def can_execute?
@@ -49,29 +57,19 @@ module NiftyServices
         return not_found_error!(invalid_record_error_key)
       end
 
-      if validate_user? && !valid_user?
-        return not_found_error!(invalid_user_error_key)
-      end
-
       return true
     end
 
     def can_update_record?
-      unless user_can_update_record?
-        return (valid? ? forbidden_error!(user_cant_update_error_key) : false)
-      end
-
-      return true
+      not_implemented_exception(__method__)
     end
 
     def can_execute_action?
-      return can_update_record?
-    end
+      unless can_update_record?
+        return (valid? ? forbidden_error!(cant_update_error_key) : false)
+      end
 
-    def user_can_update_record?
-      return not_implemented_exception(__method__) unless @record.respond_to?(:user_can_update?)
-
-      @record.user_can_update?(@user)
+      return true
     end
 
     def duplicate_records_before_update
@@ -82,8 +80,8 @@ module NiftyServices
       "#{record_error_key}.not_found"
     end
 
-    def user_cant_update_error_key
-      "#{record_error_key}.user_cant_update"
+    def cant_update_error_key
+      "#{record_error_key}.cant_update"
     end
 
   end

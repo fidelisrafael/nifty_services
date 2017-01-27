@@ -6,8 +6,8 @@ module NiftyServices
     CALLBACKS = [
       :before_execute_service_action,
       :after_execute_service_action,
-      :before_destroy_record,
-      :after_destroy_record,
+      :before_delete_record,
+      :after_delete_record,
       :before_update_record,
       :after_update_record,
       :before_build_record,

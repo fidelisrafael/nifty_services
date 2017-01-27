@@ -1,9 +1,8 @@
 module NiftyServices
   class BaseCreateService < BaseCrudService
 
-    def initialize(user, options = {})
-      @user = user
-      super(nil, user, options)
+    def initialize(options = {})
+      super(nil, options)
     end
 
     def execute
@@ -12,7 +11,7 @@ module NiftyServices
           if can_execute_action?
             @record = with_before_and_after_callbacks(:build_record) { build_record }
 
-            if save_record
+            if try_to_save_record
               after_execute_success_response
             else
               errors = create_error_response(@record)
@@ -25,8 +24,16 @@ module NiftyServices
 
     private
     def save_record
+      save_method = NiftyServices.configuration.save_record_method
+
+      return save_method.call(@record) if save_method.respond_to?(:call)
+
+      @record.public_send(save_method)
+    end
+
+    def try_to_save_record
       begin
-        @record.save
+        save_record
       rescue => e
         on_save_record_error(e)
       ensure
@@ -43,7 +50,7 @@ module NiftyServices
     end
 
     def after_error_response(errors)
-      unprocessable_entity_error(errors) unless errors.empty?
+      unprocessable_entity_error(errors) if @errors.empty?
     end
 
     def after_execute_success_response
@@ -56,47 +63,41 @@ module NiftyServices
         return @temp_record = build_from_record_type(record_allowed_attributes)
       end
 
-      return not_implemented_exception(__method__)
+      @temp_record = record_type.public_send(:new, record_allowed_attributes)
     end
 
     def build_record_scope
       nil
     end
 
-    def build_from_record_type(params)
-      if !build_record_scope.nil? && build_record_scope.respond_to?(:build)
-        return build_record_scope.build(params)
+    def build_from_record_type(attributes)
+      scope = record_type
+
+      if !build_record_scope.nil? && build_record_scope.respond_to?(:new)
+        scope = build_record_scope
       end
 
-      record_type.new(params)
+      scope.new(attributes)
     end
 
     def can_execute?
-      if validate_user? && !valid_user?
-        return not_found_error!(invalid_user_error_key)
-      end
-
       return true
     end
 
     def can_create_record?
-      unless user_can_create_record?
-        return (valid? ? forbidden_error!(user_cant_create_error_key) : false)
+      not_implemented_exception(__method__)
+    end
+
+    def can_execute_action?
+      unless can_create_record?
+        return (valid? ? forbidden_error!(cant_create_error_key) : false)
       end
 
       return true
     end
 
-    def user_can_create_record?
-      not_implemented_exception(__method__)
-    end
-
-    def can_execute_action?
-      return can_create_record?
-    end
-
-    def user_cant_create_error_key
-      "#{record_error_key}.user_cant_create"
+    def cant_create_error_key
+      "#{record_error_key}.cant_create"
     end
   end
 end

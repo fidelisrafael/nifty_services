@@ -11,64 +11,94 @@ Most of time, the best way is to copy all content from each service described be
 
 ```ruby
 class SomeCreateService < NiftyServices::BaseCreateService
+  # [Required]
+  # remember that inside the Service you always can use
+  # @record variable to access current record
+  # and from outside (service instance):
+  # service.record or service.record_type
+  # eg:
+  # record_type BlogPost
+  # service.record # BlogPost.new(...)
+  # service.blog_post # BlogPost.new(...)
+  # service.record == service.blog_post # true
+  # alias_name can be used to create a custom alias name
+  # eg:
+  # record_type BlogPost, alias_name: :post
+  # service.record # BlogPost.new(...)
+  # service.post # BlogPost.new(...)
+  # service.record == service.post # true
 
- # [Required]
- # remember that inside the Service you always can use
- # @record variable to access current record
- # and from outside (service instance):
- # service.record or service.record_type
- # eg:
- # record_type BlogPost
- # service.record # BlogPost.new(...)
- # service.blog_post # BlogPost.new(...)
- # service.record == service.blog_post # true
- # alias_name can be used to create a custom alias name
- # eg:
- # record_type BlogPost, alias_name: :post
- # service.record # BlogPost.new(...)
- # service.post # BlogPost.new(...)
- # service.record == service.post # true
+  record_type RecordType, alias_name: :my_custom_alias_name
 
- record_type RecordType, alias_name: :my_custom_alias_name
+  ## Its a good convention to create a constant and not returning the plain
+  ## array in `record_attributes_whitelist` since this can be accessed from others
+  ## places, as: `SomeCreateService::WHITELIST_ATTRIBUTES`
+  WHITELIST_ATTRIBUTES = [
+    :safe_attribute_1,
+    :safe_attribute_2,
+  ]
 
- private
- # [Required]
- # Always validate if @user can create the current record_type
- # If this method is not implemented a NotImplementedError exception will be raised
- def user_can_create_record?
-  return forbidden_error!('errors.some_error') if (some_validation)
+  # You can freely override initialize method to receive more arguments
+  def initialize(record, user, options = {})
+    @user = user
+    super(record, options)
+  end
 
-  return bad_request_error!('errors.some_other_error') if (another_validation)
+  # [Required]
+  # You must explicit return an array will all permited attributes
+  # If this method is not implemented a NotImplementedError exception will be raised
+  def record_attributes_whitelist
+    WHITELIST_ATTRIBUTES
+  end
 
-  # remember to return true after all validations
-  # if you don't return true Service will not be able to create the record
-  return true
- end
+  private
+  # [Optional]
+  # this key is used for I18n translations, you don't need to override or implement
+  # NiftyService will try to inflect this using `record_type.to_s.pluralize.underscore`
+  # So, if your record type is `Post`, `record_error_key` will be `posts`
+  def record_error_key
+    :posts
+  end
 
- # [Optional]
- # method called when save_error method call raises an exception
- # this ocurr for example with ActiveRecord objects
- # default: unprocessable_entity_error!(error)
- def on_save_record_error(error)
-   logger.error(error)
-   if error.is_a?(ActiveRecord::RecordNotUnique)
+  # [Required]
+  # Always validate if service can be executed based on your rules and ACL
+  # If this method is not implemented a NotImplementedError exception will be raised
+  def can_create_record?
+    unless valid_user?
+      return not_found_error!('users.not_found')
+    end
+
+    return forbidden_error!('errors.some_error') if (some_validation)
+
+    return bad_request_error!('errors.some_other_error') if (another_validation)
+
+    # remember to return true after all validations
+    # if you don't return true Service will not be able to create the record
+    return true
+  end
+
+  # [Optional]
+  # method called when save_error method call raises an exception
+  # this ocurr for example with ActiveRecord objects
+  # default: unprocessable_entity_error!(error)
+  def on_save_record_error(error)
+    logger.error(error)
+
+    if error.is_a?(ActiveRecord::RecordNotUnique)
      return unprocessable_entity_error!(%s(posts.duplicate_record))
-   end
- end
+    end
+  end
 
- # [Optional]
- # determine wheter user will be validate as valid object before
- # record creation
- # (default: true)
- def validate_user?
-  return true
- end
+  # [Optional]
+  # custom scope for record, eg: @user.posts
+  # default is nil
+  def build_record_scope
+   nil
+  end
 
- # [Optional]
- # custom scope for record, eg: @user.posts
- # default is nil
- def build_record_scope
- end
+  def valid_user?
+    valid_object?(@user, User)
+  end
 end
 ```
 
@@ -76,16 +106,28 @@ end
 
 ```ruby
 class SomeUpdateService < NiftyServices::BaseUpdateService
+  
+  attr_reader :user
 
   # [Required]
   record_type RecordType, alias_name: :custom_alias_name
+  
+  # You can freely override initialize method to receive more arguments
+  def initialize(record, user, options = {})
+    @user = user
+    super(record, options)
+  end
 
+  ## Its a good convention to create a constant and not returning the plain
+  ## array in `record_attributes_whitelist` since this can be accessed from others
+  ## places, as: `SomeCreateService::WHITELIST_ATTRIBUTES`
   WHITELIST_ATTRIBUTES = [
     :safe_attribute_1,
     :safe_attribute_2,
   ]
 
   private
+
   # [Required]
   # When a new instance of Service is created, the @options variables receive some
   # values, eg: { user: { email: "...", name: "...."} }
@@ -93,11 +135,11 @@ class SomeUpdateService < NiftyServices::BaseUpdateService
   # eg: @options.fetch(:user, {})
   # If this method is not implemented a NotImplementedError exception will be raised
   def record_attributes_hash
-    @options.fetch(options_key, {})
+    @options.fetch(:data, {})
   end
 
   # [Required]
-  # whitelisted attributes (must be an Array) which can be updated by this Service
+  # You must explicit return an array will all permited attributes allowed to be updated
   # If this method is not implemented a NotImplementedError exception will be raised
   def record_attributes_whitelist
     WHITELIST_ATTRIBUTES
@@ -106,10 +148,8 @@ class SomeUpdateService < NiftyServices::BaseUpdateService
   # [required]
   # This is a VERY IMPORTANT point of attention
   # always verify if @user has permissions to update the current @record object
-  # Hint: if @record respond_to `user_can_update?(user)` you can remove this
-  # method and do the validation inside `user_can_update(user)` method in @record
   # If this method is not implemented a NotImplementedError exception will be raised
-  def user_can_update_record?
+  def can_update_record?
     @record.user_id == @user.id
   end
 
@@ -140,8 +180,16 @@ end
 
 ```ruby
 class SomeDeleteService < NiftyServices::BaseDeleteService
+  
+  # You can freely override initialize method to receive more arguments
+  def initialize(record, user, options = {})
+    @user = user
+    super(record, options)
+  end
 
   # [Required]
+  # record_type object must respond to :delete method
+  # But you can override `delete_method` method to do whatever you want
   record_type RecordType, alias_name: :custom_alias_name
 
   private
@@ -152,8 +200,7 @@ class SomeDeleteService < NiftyServices::BaseDeleteService
   # Hint: if @record respond_to `user_can_delete?(user)` you can remove this
   # method and do the validation inside `user_can_delete(user)` method in @record
   # If this method is not implemented a NotImplementedError exception will be raised
-
-  def user_can_delete_record?
+  def can_delete_record?
     @record.user_id == @user.id
   end
 
@@ -167,8 +214,8 @@ class SomeDeleteService < NiftyServices::BaseDeleteService
   # This is the default implementation of delete record, you may overwrite it
   # to do custom delete (MOST OF TIME YOU DONT NEED TO DO THIS)
   # only change this if you know what you are really doing
-  def destroy_record
-    @record.destroy
+  def delete_record
+    @record.delete
   end
 
 end
@@ -192,7 +239,7 @@ class SomeCustomActionService < NiftyServices::BaseActionService
   # This method MUST return a boolean value indicating if Service can or not
   # run the method `execute_service_action`
   # If this method is not implemented a NotImplementedError exception will be raised
-  def user_can_execute_action?
+  def can_execute_action?
     # do some specific validation here, you can return errors such:
     # return not_found_error!(%(users.invalid_user)) # returns false and avoid execution
     return true
@@ -206,7 +253,8 @@ class SomeCustomActionService < NiftyServices::BaseActionService
   def execute_service_action
     # (do some complex stuff)
   end
-
+ 
+  # [Optional]
   # You dont need to overwrite this method, just `record_error_key`
   # But it's important you know how final message key will be created
   # using the pattern below

@@ -26,7 +26,7 @@ module NiftyServices
     end
 
     def can_execute?
-      unless user_can_execute_action?
+      unless can_execute_action?
         return (valid? ? unprocessable_entity_error!(invalid_action_error_key) : false)
       end
 
@@ -37,7 +37,7 @@ module NiftyServices
       "#{record_error_key}.cant_execute_#{action_name}"
     end
 
-    def user_can_execute_action?
+    def can_execute_action?
       not_implemented_exception(__method__)
     end
 

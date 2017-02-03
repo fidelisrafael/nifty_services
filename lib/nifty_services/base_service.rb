@@ -32,6 +32,7 @@ module NiftyServices
       alias_method :include_concern, :concern
     end
 
+    public
     def initialize(options = {}, initial_response_status = 400)
       @options = with_default_options(options)
       @errors = []
@@ -94,6 +95,7 @@ module NiftyServices
     alias :runned? :executed?
 
     private
+
     def with_default_options(options)
       default_options.merge(options).symbolize_keys
     end
@@ -194,8 +196,8 @@ module NiftyServices
 
       return changes if old.nil? || current.nil?
 
-      old_attributes = old.attributes.slice(*attributes.map(&:to_s))
-      new_attributes = current.attributes.slice(*attributes.map(&:to_s))
+      old_attributes = old.attributes.symbolize_keys.slice(*attributes.map(&:to_sym))
+      new_attributes = current.attributes.symbolize_keys.slice(*attributes.map(&:to_sym))
 
       new_attributes.each do |attribute, value|
         changes << attribute if (old_attributes[attribute] != value)

@@ -14,43 +14,50 @@ module NiftyServices
             if try_to_save_record
               after_execute_success_response
             else
-              errors = create_error_response(@record)
-              after_error_response(errors)
+              on_record_create_failed(@record)
             end
           end
         end
       end
     end
 
+    def success_created?
+      valid?
+    end
+
     private
+    def can_create_record?
+      not_implemented_exception(__method__)
+    end
+
+    def on_save_record_error(error)
+      raise_record_error_exception(__method__, error)
+    end
+
+    def on_record_create_failed(record)
+      unprocessable_entity_error!(create_errors(record)) if @errors.empty?
+    end
+
+    def try_to_save_record
+      throw_exception = false
+
+      begin
+        save_record
+      rescue => e
+        throw_exception = true
+      ensure
+        on_save_record_error(e) if throw_exception
+
+        return success_created?
+      end
+    end
+
     def save_record
       save_method = NiftyServices.configuration.save_record_method
 
       return save_method.call(@record) if save_method.respond_to?(:call)
 
       @record.public_send(save_method)
-    end
-
-    def try_to_save_record
-      begin
-        save_record
-      rescue => e
-        on_save_record_error(e)
-      ensure
-        return @record.valid?
-      end
-    end
-
-    def on_save_record_error(error)
-      return unprocessable_entity_error!(error)
-    end
-
-    def create_error_response(record)
-      record.errors
-    end
-
-    def after_error_response(errors)
-      unprocessable_entity_error(errors) if @errors.empty?
     end
 
     def after_execute_success_response
@@ -84,16 +91,16 @@ module NiftyServices
       return true
     end
 
-    def can_create_record?
-      not_implemented_exception(__method__)
-    end
-
     def can_execute_action?
       unless can_create_record?
         return (valid? ? forbidden_error!(cant_create_error_key) : false)
       end
 
       return true
+    end
+
+    def create_errors(record)
+      record.errors
     end
 
     def cant_create_error_key

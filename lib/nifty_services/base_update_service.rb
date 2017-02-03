@@ -7,13 +7,12 @@ module NiftyServices
           if can_execute_action?
             duplicate_records_before_update
 
-            @record = with_before_and_after_callbacks(:update_record) { update_record }
+            with_before_and_after_callbacks(:update_record) { try_to_update_record }
 
             if success_updated?
               success_response
             else
-              errors = update_errors
-              unprocessable_entity_error!(errors) unless errors.empty?
+              on_record_update_failed(@record)
             end
           end
         end
@@ -22,21 +21,39 @@ module NiftyServices
 
     def changed_attributes
       return [] if fail?
+
       @changed_attributes ||= changes(@last_record, @record, changed_attributes_array)
-    end
-
-    private
-
-    def changed_attributes_array
-      record_allowed_attributes.keys
     end
 
     def success_updated?
       @record.valid?
     end
 
-    def update_errors
-      @record.errors
+    private
+
+    def can_update_record?
+      not_implemented_exception(__method__)
+    end
+
+    def on_update_record_error(error)
+      raise_record_error_exception(__method__, error)
+    end
+
+    def on_record_update_failed(record)
+      unprocessable_entity_error!(update_errors(record)) if errors.empty?
+    end
+
+    def try_to_update_record
+      throw_exception = false
+      begin
+        update_record
+      rescue => e
+        throw_exception = true
+      ensure
+        on_update_record_error(e) if throw_exception
+
+        return success_updated?
+      end
     end
 
     def update_record
@@ -60,10 +77,6 @@ module NiftyServices
       return true
     end
 
-    def can_update_record?
-      not_implemented_exception(__method__)
-    end
-
     def can_execute_action?
       unless can_update_record?
         return (valid? ? forbidden_error!(cant_update_error_key) : false)
@@ -74,6 +87,14 @@ module NiftyServices
 
     def duplicate_records_before_update
       @last_record = @record.dup
+    end
+
+    def changed_attributes_array
+      record_allowed_attributes.keys
+    end
+
+    def update_errors(record)
+      record.errors
     end
 
     def invalid_record_error_key

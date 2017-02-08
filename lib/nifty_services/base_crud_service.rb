@@ -76,5 +76,9 @@ module NiftyServices
     def valid_record?
       valid_object?(@record, record_type)
     end
+
+    def raise_record_error_exception(method_name, error)
+      raise error, "You must implement #{method_name} in your class(#{self.class}) to handle exceptions"
+    end
   end
 end

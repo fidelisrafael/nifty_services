@@ -64,6 +64,8 @@ module NiftyServices
     def register_callback(callback_name, method_name, &block)
       method_name = normalized_callback_name(method_name).to_sym
 
+      @registered_callbacks[callback_name.to_sym] ||= []
+
       @registered_callbacks[callback_name.to_sym] << method_name
       register_callback_action(callback_name, &block)
     end
@@ -79,7 +81,7 @@ module NiftyServices
 
       @fired_callbacks, @custom_fired_callbacks = {}, {}
       @callbacks_actions = {}
-      @registered_callbacks ||= Hash.new {|k,v| k[v] = [] }
+      @registered_callbacks ||= {}
 
       @callbacks_setup = true
     end
@@ -121,6 +123,8 @@ module NiftyServices
 
     def instance_call_all_custom_registered_callbacks_for(callback_name)
       callbacks = @registered_callbacks[callback_name.to_sym]
+
+      return unless callbacks
 
       callbacks.each do |cb|
         if callback = @callbacks_actions[cb.to_sym]

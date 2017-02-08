@@ -51,11 +51,6 @@ module NiftyServices
       end
     end
 
-    CALLBACKS.each do |callback_name|
-      # empty method call (just returns nil)
-      define_method callback_name, -> {}
-    end
-
     def callback_fired?(callback_name)
       return (
               callback_fired_in?(@fired_callbacks, callback_name) ||
@@ -84,7 +79,7 @@ module NiftyServices
 
       @fired_callbacks, @custom_fired_callbacks = {}, {}
       @callbacks_actions = {}
-      @registered_callbacks = Hash.new {|k,v| k[v] = [] }
+      @registered_callbacks ||= Hash.new {|k,v| k[v] = [] }
 
       @callbacks_setup = true
     end
@@ -92,26 +87,24 @@ module NiftyServices
     def call_callback(callback_name)
       callback_name = callback_name.to_s.underscore.to_sym
 
-      if has_callback?(callback_name)
-        @fired_callbacks[callback_name.to_sym] = true
+      @fired_callbacks[callback_name.to_sym] = true
 
-        invoke_callback(method(callback_name))
-        call_registered_callbacks_for(callback_name)
-      end
+      try_to_invoke_callback(callback_name)
+
+      call_registered_callbacks_for(callback_name)
 
       # allow chained methods
       self
     end
 
-    def has_callback?(callback_name)
-      _callback_name = normalized_callback_name(callback_name).to_sym
-       # include private methods
-      respond_to?(callback_name, true) || respond_to?(_callback_name, true)
+
+    def has_callback_method?(callback_name)
+      return true if respond_to?(callback_name, true)
+
+      return respond_to?(normalized_callback_name(callback_name), true)
     end
 
     def with_before_and_after_callbacks(callback_basename, &block)
-      callbacks_setup
-
       call_callback(:"before_#{callback_basename}")
 
       block_response = yield(block) if block_given?
@@ -127,8 +120,6 @@ module NiftyServices
     end
 
     def instance_call_all_custom_registered_callbacks_for(callback_name)
-      @fired_callbacks[callback_name] = true
-
       callbacks = @registered_callbacks[callback_name.to_sym]
 
       callbacks.each do |cb|
@@ -140,30 +131,35 @@ module NiftyServices
     end
 
     def class_call_all_custom_registered_callbacks_for(callback_name)
-      classes_chain = self.class.ancestors.map(&:to_s).grep /\ANiftyServices/
-      klasses = @@registered_callbacks.keys.map(&:to_s) & classes_chain
-
-      klasses.each do |klass|
+      @@registered_callbacks.each do |klass, _|
         class_call_all_custom_registered_callbacks_for_class(klass, callback_name)
       end
     end
 
     def class_call_all_custom_registered_callbacks_for_class(class_name, callback_name)
       class_callbacks = @@registered_callbacks[class_name.to_sym]
-      callbacks = class_callbacks[callback_name.to_sym] || []
+      callbacks = class_callbacks[callback_name.to_sym]
+
+      return nil unless callbacks
 
       callbacks.each do |cb|
         @custom_fired_callbacks[cb.to_sym] = true
-        invoke_callback(method(cb))
+        try_to_invoke_callback(cb)
       end
+    end
+
+    def try_to_invoke_callback(cb)
+      return nil unless has_callback_method?(cb)
+
+      invoke_callback(method(cb))
     end
 
     def callback_fired_in?(callback_list, callback_name)
       return callback_list.key?(callback_name.to_sym)
     end
 
-    def normalized_callback_name(callback_name, prefix = '_callback')
-      Util.normalized_callback_name(callback_name, prefix)
+    def normalized_callback_name(callback_name, suffix = '_callback')
+      Util.normalized_callback_name(callback_name, suffix)
     end
 
     def invoke_callback(method)

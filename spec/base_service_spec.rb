@@ -10,7 +10,8 @@ RSpec.describe NiftyServices::BaseService, type: :service do
 
   it 'must have error handle methods' do
     NiftyServices::Configuration.response_errors_list.each do |method, response_status|
-      expect(subject.respond_to?("#{method}_error", true)).to be_truthy
+      method_name = NiftyServices::Util.normalized_callback_name(method, '_error')
+      expect(subject.respond_to?(method_name, true)).to be_truthy
     end
   end
 

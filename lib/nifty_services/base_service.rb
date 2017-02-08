@@ -40,6 +40,8 @@ module NiftyServices
 
       @executed = false
 
+      callbacks_setup
+
       with_before_and_after_callbacks(:initialize) do
         set_response_status(initial_response_status)
       end
